@@ -1,0 +1,14 @@
+# Java
+
+*.class
+
+
+# IntelliJ IDEA
+
+*.iml
+.idea/
+
+
+# Maven
+
+target/
