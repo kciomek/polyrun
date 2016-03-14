@@ -5,20 +5,31 @@ import polyrun.exceptions.InfeasibleSystemException;
 import polyrun.exceptions.UnboundedSystemException;
 import polyrun.sampler.Sampler;
 import polyrun.solver.CommonMathGLPSolverWrapper;
+import polyrun.solver.GLPSolver;
 
 import java.util.Random;
 
 public class SamplerRunner {
     private final Sampler sampler;
     private final Random random;
+    private final GLPSolver glpSolver;
 
-    public SamplerRunner(Sampler sampler, Random random) {
+    public SamplerRunner(Sampler sampler, Random random, GLPSolver glpSolver) {
         this.sampler = sampler;
         this.random = random;
+        this.glpSolver = glpSolver;
+    }
+
+    public SamplerRunner(Sampler sampler, Random random) {
+        this(sampler, random, new CommonMathGLPSolverWrapper());
+    }
+
+    public SamplerRunner(Sampler sampler, GLPSolver glpSolver) {
+        this(sampler, new Random(), glpSolver);
     }
 
     public SamplerRunner(Sampler sampler) {
-        this(sampler, new Random());
+        this(sampler, new Random(), new CommonMathGLPSolverWrapper());
     }
 
     /**
@@ -89,7 +100,7 @@ public class SamplerRunner {
             }
         } else {
             double[][] transformedInequalitiesLhs = transformation.reduceDimensionality(constraintsSystem.getA());
-            double[] startPoint = new InteriorPoint(this.random).generate(transformedInequalitiesLhs, constraintsSystem.getB(), new CommonMathGLPSolverWrapper(), startFromRandomizedPoint, true);
+            double[] startPoint = new InteriorPoint(this.random).generate(transformedInequalitiesLhs, constraintsSystem.getB(), this.glpSolver, startFromRandomizedPoint, true);
 
             if (consumer == null) {
                 samples = this.sampler.sample(transformedInequalitiesLhs, constraintsSystem.getB(), true, startPoint, numberOfSamples);
