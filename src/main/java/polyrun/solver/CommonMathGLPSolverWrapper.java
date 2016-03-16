@@ -10,7 +10,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class CommonMathGLPSolverWrapper implements GLPSolver {
+    private final SimplexSolver solver;
+
+    public CommonMathGLPSolverWrapper(SimplexSolver solver) {
+        this.solver = solver;
+    }
+
     public CommonMathGLPSolverWrapper() {
+        this.solver = new SimplexSolver(1e-4, 10, 1e-6);
     }
 
     @Override
@@ -34,7 +41,7 @@ public class CommonMathGLPSolverWrapper implements GLPSolver {
         }
 
         try {
-            PointValuePair solution = new SimplexSolver(1e-4, 10, 1e-6).optimize(cmObjective,
+            PointValuePair solution = this.solver.optimize(cmObjective,
                     new LinearConstraintSet(cmConstraints),
                     goalType,
                     new NonNegativeConstraint(false));
