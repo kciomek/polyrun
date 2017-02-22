@@ -4,7 +4,7 @@ import polyrun.constraints.ConstraintsSystem;
 import polyrun.exceptions.UnboundedSystemException;
 
 /**
- * Represents solver of General Linear Programming problem.
+ * Solver of General Linear Programming problem.
  */
 public interface GLPSolver {
     enum Direction {

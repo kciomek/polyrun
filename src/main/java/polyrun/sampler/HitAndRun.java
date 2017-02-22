@@ -6,7 +6,7 @@ import polyrun.thinning.ThinningFunction;
 import java.util.Random;
 
 /**
- * HitAndRun sampler. It provides method to sample uniformly from convex polytope described by a system of linear inequalities Ax <= b.
+ * HitAndRun sampler. It provides method to sample uniformly from convex polytope described by a system of linear inequalities Ax &le; b.
  */
 public class HitAndRun implements Sampler {
     private final ThinningFunction thinningFunction;
@@ -75,7 +75,7 @@ public class HitAndRun implements Sampler {
 
         UnitNSphere unitNSphere = new UnitNSphere(this.random);
 
-        final int thin  = this.thinningFunction.getThinningFactor(homogeneous ? numberOfVariables - 1 : numberOfVariables);
+        final int thin = Math.max(this.thinningFunction.getThinningFactor(homogeneous ? numberOfVariables - 1 : numberOfVariables), 1);
 
         double[][] result = new double[numberOfSamples][numberOfVariables];
 

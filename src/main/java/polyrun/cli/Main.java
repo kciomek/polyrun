@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-public class Main {
+class Main {
     private static final Set<String> ALLOWED_DIRECTIONS = new HashSet<String>(Arrays.asList("<=", ">=", "="));
 
     public static void main(String[] args) throws Exception {

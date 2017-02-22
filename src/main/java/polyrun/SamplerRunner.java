@@ -9,6 +9,10 @@ import polyrun.solver.GLPSolver;
 
 import java.util.Random;
 
+/**
+ * Runner of {@link Sampler}. Prepares system of constraints, generates start point and allows to process samples
+ * of generated sampled using interface {@link SampleConsumer}.
+ */
 public class SamplerRunner {
     private final Sampler sampler;
     private final Random random;
@@ -33,10 +37,9 @@ public class SamplerRunner {
     }
 
     /**
-     *
-     * @param constraintsSystem System of linear constraints (Ax<=b, Cx=d). It is expected to be consistent and A is expected to be full-dimensional.
-     * @param numberOfSamples
-     * @return
+     * @param constraintsSystem system of linear constraints (Ax&le;b, Cx=d) that is expected to be consistent and Ax&le;b to be full-dimensional
+     * @param numberOfSamples   number of samples
+     * @return Samples
      * @throws UnboundedSystemException
      * @throws InfeasibleSystemException
      */
@@ -45,11 +48,10 @@ public class SamplerRunner {
     }
 
     /**
-     *
-     * @param constraintsSystem System of linear constraints (Ax<=b, Cx=d). It is expected to be consistent and A is expected to be full-dimensional.
-     * @param numberOfSamples
-     * @param startFromRandomizedPoint
-     * @return
+     * @param constraintsSystem        system of linear constraints (Ax&le;b, Cx=d) that is expected to be consistent and Ax&le;b to be full-dimensional
+     * @param numberOfSamples          number of samples
+     * @param startFromRandomizedPoint whether to start from randomized point
+     * @return Samples
      * @throws UnboundedSystemException
      * @throws InfeasibleSystemException
      */
@@ -58,10 +60,9 @@ public class SamplerRunner {
     }
 
     /**
-     *
-     * @param constraintsSystem System of linear constraints (Ax<=b, Cx=d). It is expected to be consistent and A is expected to be full-dimensional.
-     * @param numberOfSamples
-     * @param consumer
+     * @param constraintsSystem system of linear constraints (Ax&le;b, Cx=d) that is expected to be consistent and Ax&le;b to be full-dimensional
+     * @param numberOfSamples   number of samples
+     * @param consumer          samples consumer
      * @throws UnboundedSystemException
      * @throws InfeasibleSystemException
      */
@@ -70,11 +71,10 @@ public class SamplerRunner {
     }
 
     /**
-     *
-     * @param constraintsSystem System of linear constraints (Ax<=b, Cx=d). It is expected to be consistent and A is expected to be full-dimensional.
-     * @param numberOfSamples
-     * @param startFromRandomizedPoint
-     * @param consumer
+     * @param constraintsSystem        system of linear constraints (Ax&le;b, Cx=d) that is expected to be consistent and Ax&le;b to be full-dimensional
+     * @param numberOfSamples          number of samples
+     * @param startFromRandomizedPoint whether to start from randomized point
+     * @param consumer                 samples consumer
      * @throws UnboundedSystemException
      * @throws InfeasibleSystemException
      */

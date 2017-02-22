@@ -7,7 +7,7 @@ import polyrun.exceptions.UnboundedSystemException;
 import polyrun.solver.CommonMathGLPSolverWrapper;
 
 public class InteriorPointTest {
-    private static double accuracy = 1e-9;
+    private static final double accuracy = 1e-9;
 
     @Test
     public void test_2D_nonRandomized_square() throws Exception {

@@ -19,6 +19,18 @@ public class InteriorPoint {
         this(new Random());
     }
 
+    /**
+     * Finds interior point of Ax &le; b. Note that the system is required to be full-dimensional.
+     *
+     * @param A matrix A
+     * @param b vector b
+     * @param solver solver
+     * @param randomizePoint whether to randomize start point (not uniformly)
+     * @param homogeneous whether provided system is in homogeneous coordinates
+     * @return interior point
+     * @throws UnboundedSystemException
+     * @throws InfeasibleSystemException
+     */
     public double[] generate(double[][] A, double[] b, GLPSolver solver, boolean randomizePoint, boolean homogeneous) throws UnboundedSystemException, InfeasibleSystemException {
         int numberOfOriginalConstrains = A.length;
         int numberOfOriginalVariables = A[0].length;

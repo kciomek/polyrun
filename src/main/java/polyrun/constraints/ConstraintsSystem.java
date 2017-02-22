@@ -3,9 +3,9 @@ package polyrun.constraints;
 import java.util.Collection;
 
 /**
- * System of linear constraints represented as matrices A, C and vectors b, d:
- * Ax <= b
- * Cx = d
+ * System of linear constraints represented as matrices A, C and vectors b, d, where
+ * Ax &le; b,
+ * Cx = d.
  */
 public class ConstraintsSystem {
     private final double[][] A;

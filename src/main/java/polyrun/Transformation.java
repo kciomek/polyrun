@@ -10,12 +10,12 @@ public class Transformation {
 
     /**
      * Builds transformation that is based on system C x = d.
+     * <p>
+     * Note: Cx = d is expected to be consistent system of equations.
      *
-     * Note: C x = d is expected to be consistent system of equations!
-     *
-     * @param matrixC
-     * @param vectord
-     * @param numberOfVariables
+     * @param matrixC           matrix C
+     * @param vectord           vector d
+     * @param numberOfVariables number of variables
      */
     public Transformation(double matrixC[][], double[] vectord, int numberOfVariables) {
         Matrix basis;

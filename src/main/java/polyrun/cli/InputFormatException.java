@@ -1,6 +1,6 @@
-package polyrun.exceptions;
+package polyrun.cli;
 
-public class InputFormatException extends Exception {
+class InputFormatException extends Exception {
     public InputFormatException(String message) {
         super(message);
     }

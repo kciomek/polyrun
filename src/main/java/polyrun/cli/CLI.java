@@ -4,7 +4,7 @@ import org.apache.commons.cli.*;
 
 import java.util.Random;
 
-public class CLI {
+class CLI {
     private static final int DEFAULT_NUMBER_OF_SAMPLES = 1000;
 
     private final CommandLineParser parser;

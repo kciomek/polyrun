@@ -18,14 +18,14 @@ public class UnitNSphere {
 
     /**
      * Simple method of picking random point from unit n-sphere. It fills the vector (double[]) passed as first argument.
-     * If that vector is provided in homogeneous coordinates, zero will be assigned to the last element, and
+     * If the vector is provided in homogeneous coordinates, zero will be assigned to the last element, and
      * first elements will be filled with random point of unit n-sphere.
-     *
-     * To get random point of n-unit sphere in Cartesian coordinates input vector has to be the length of n+1,
+     * <p>
+     * To get random point of unit n-sphere in Cartesian coordinates input vector has to be the length of n+1,
      * and in homogeneous coordinates coordinates vector has to be the length of n+2.
      *
-     * @param vectorToFill Vector to fill.
-     * @param homogeneous  Whether provided vector is in homogeneous coordinates.
+     * @param vectorToFill vector to fill
+     * @param homogeneous  whether provided vector is in homogeneous coordinates
      */
     public void fillVectorWithRandomPoint(double[] vectorToFill, boolean homogeneous) {
         double s = 0.0;

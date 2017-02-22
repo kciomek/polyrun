@@ -7,7 +7,8 @@ public interface ThinningFunction {
 
     /**
      * Returns thinning factor for given number of dimensions.
-     * @param dimensions Number of dimensions of sampling space.
+     *
+     * @param dimensions number of dimensions of sampling space
      * @return thinning factor
      */
     int getThinningFactor(int dimensions);
