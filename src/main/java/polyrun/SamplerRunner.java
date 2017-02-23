@@ -39,7 +39,7 @@ public class SamplerRunner {
     /**
      * @param constraintsSystem system of linear constraints (Ax&le;b, Cx=d) that is expected to be consistent and Ax&le;b to be full-dimensional
      * @param numberOfSamples   number of samples
-     * @return Samples
+     * @return samples
      * @throws UnboundedSystemException
      * @throws InfeasibleSystemException
      */
@@ -51,7 +51,7 @@ public class SamplerRunner {
      * @param constraintsSystem        system of linear constraints (Ax&le;b, Cx=d) that is expected to be consistent and Ax&le;b to be full-dimensional
      * @param numberOfSamples          number of samples
      * @param startFromRandomizedPoint whether to start from randomized point
-     * @return Samples
+     * @return samples
      * @throws UnboundedSystemException
      * @throws InfeasibleSystemException
      */

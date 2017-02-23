@@ -4,9 +4,7 @@ import polyrun.SampleConsumer;
 import polyrun.SamplerRunner;
 import polyrun.constraints.Constraint;
 import polyrun.constraints.ConstraintsSystem;
-import polyrun.exceptions.InputFormatException;
 import polyrun.sampler.HitAndRun;
-import polyrun.thinning.LinearlyScalableThinningFunction;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -20,27 +18,45 @@ class Main {
     public static void main(String[] args) throws Exception {
         // Parse command line arguments
         final CLI cli = new CLI();
-        cli.parse(args);
 
-        // Read constraints
-        ConstraintsSystem constraintsSystem = Main.readConstraintSystem(cli.getInputFilePath());
+        try {
+            cli.parse(args);
+        } catch (NumberFormatException ex) {
+            System.err.println("Wrong number format. " + ex.getMessage());
+            System.exit(1);
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+            System.exit(1);
+        }
 
-        // Sample
-        new SamplerRunner(new HitAndRun(new LinearlyScalableThinningFunction(1.0), new Random(cli.getSeed()))).sample(
-                constraintsSystem,
-                cli.getNumberOfSamples(),
-                new SampleConsumer() {
-                    @Override
-                    public void consume(double[] sample) {
-                        StringBuilder sb = new StringBuilder();
+        try {
+            // Read constraints
+            ConstraintsSystem constraintsSystem = Main.readConstraintSystem(cli.getInputFilePath());
 
-                        for (double val : sample) {
-                            sb.append(Double.toString(val)).append("\t");
+            // Sample
+            new SamplerRunner(new HitAndRun(cli.getThinningFunction(), new Random(cli.getSeed()))).sample(
+                    constraintsSystem,
+                    cli.getNumberOfSamples(),
+                    new SampleConsumer() {
+                        @Override
+                        public void consume(double[] sample) {
+                            StringBuilder sb = new StringBuilder();
+
+                            for (double val : sample) {
+                                sb.append(Double.toString(val)).append("\t");
+                            }
+
+                            System.out.println(sb.deleteCharAt(sb.length() - 1).toString());
                         }
-
-                        System.out.println(sb.deleteCharAt(sb.length() - 1).toString());
-                    }
-                });
+                    });
+        } catch (Exception ex) {
+            if (cli.getPrintStackTraceOnError()) {
+                throw ex;
+            } else {
+                System.err.println(ex.getMessage());
+                System.exit(1);
+            }
+        }
     }
 
     private static ConstraintsSystem readConstraintSystem(String inputFilePath) throws IOException, InputFormatException {

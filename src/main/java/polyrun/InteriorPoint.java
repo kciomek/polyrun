@@ -117,7 +117,7 @@ public class InteriorPoint {
         }
 
         if (solverResult.getValue() <= 0.0) {
-            throw new InfeasibleSystemException("The original problem is infeasible or degenerated to point. Slack = " + solverResult.getValue());
+            throw new InfeasibleSystemException("Cannot find interior point. The original problem is infeasible or degenerated to a point. Slack = " + solverResult.getValue());
         }
 
         System.arraycopy(solverResult.getSolution(), 0, result, 0, result.length);

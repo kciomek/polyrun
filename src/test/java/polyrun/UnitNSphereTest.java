@@ -21,11 +21,10 @@ public class UnitNSphereTest {
         return result;
     }
 
-    // Incorrect input does not cause an exception
+    // Incorrect input throws
 
     @Test(expected = ArrayIndexOutOfBoundsException.class)
-    public void testFillVectorWithRandomPoint_CaseVectorLen0InHomogeneous_notThrow() {
-        // the input is faulty, but we do not expect any action
+    public void testFillVectorWithRandomPoint_CaseVectorLen0InHomogeneous_throws() {
         double[] vector = new double[0];
         new UnitNSphere().fillVectorWithRandomPoint(vector, true);
     }

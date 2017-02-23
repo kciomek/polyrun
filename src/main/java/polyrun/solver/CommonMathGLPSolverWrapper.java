@@ -17,7 +17,7 @@ public class CommonMathGLPSolverWrapper implements GLPSolver {
     }
 
     public CommonMathGLPSolverWrapper() {
-        this.solver = new SimplexSolver(1e-4, 10, 1e-6);
+        this.solver = new SimplexSolver();
     }
 
     @Override
