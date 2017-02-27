@@ -34,6 +34,12 @@ class CLI {
                 .build()
         );
 
+        options.addOption(Option.builder("version")
+                .required(false)
+                .desc("prints version")
+                .build()
+        );
+
         options.addOption(Option.builder("s")
                 .required(false)
                 .hasArg()
@@ -92,6 +98,11 @@ class CLI {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp(" ", this.generateOptions());
             System.exit(1);
+        }
+
+        if (cmd.hasOption("version")) {
+            System.out.println("0.2.0"); // todo: read from resources
+            System.exit(0);
         }
 
         if (cmd.hasOption("i")) {

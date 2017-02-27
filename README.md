@@ -3,28 +3,17 @@
 _Polyrun_ contains an implementation of Hit-and-Run algorithm (HAR) for uniform sampling from bounded convex polytopes defined by linear constraints.
 It is written in Java.
 
-## How to use
-
-### Get latest version with git
-
-    git clone git@github.com:kciomek/polyrun.git
-
-### Build and install with Maven
-
-Compile _polyrun_ and install it in your Maven local repository:
-
-    cd polyrun
-    mvn clean compile install
+## How to get
 
 To add a dependency in your project's pom.xml use the following:
 
     <dependency>
-        <groupId>polyrun</groupId>
+        <groupId>com.github.kciomek</groupId>
         <artifactId>polyrun</artifactId>
-        <version>0.0.1</version>
+        <version>0.2.0</version>
     </dependency>
 
-### Tutorial
+## Tutorial
 
 The software provides a method for sampling from convex polytopes defined by a system of linear constraints
 (inequalities and equalities):
@@ -87,7 +76,7 @@ and then run sampler in different way:
 
 The MIT License (MIT)
 
-Copyright (c) 2015 Krzysztof Ciomek
+Copyright (c) 2015-2017 Krzysztof Ciomek
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
