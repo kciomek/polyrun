@@ -44,7 +44,7 @@ public class SamplerRunner {
      * @throws InfeasibleSystemException
      */
     public double[][] sample(ConstraintsSystem constraintsSystem, int numberOfSamples) throws UnboundedSystemException, InfeasibleSystemException {
-        return this.runSampler(constraintsSystem, numberOfSamples, false, null);
+        return this.runSampler(constraintsSystem, numberOfSamples, null, false, null);
     }
 
     /**
@@ -56,7 +56,7 @@ public class SamplerRunner {
      * @throws InfeasibleSystemException
      */
     public double[][] sample(ConstraintsSystem constraintsSystem, int numberOfSamples, boolean startFromRandomizedPoint) throws UnboundedSystemException, InfeasibleSystemException {
-        return this.runSampler(constraintsSystem, numberOfSamples, startFromRandomizedPoint, null);
+        return this.runSampler(constraintsSystem, numberOfSamples, null, startFromRandomizedPoint, null);
     }
 
     /**
@@ -67,7 +67,7 @@ public class SamplerRunner {
      * @throws InfeasibleSystemException
      */
     public void sample(ConstraintsSystem constraintsSystem, int numberOfSamples, SampleConsumer consumer) throws UnboundedSystemException, InfeasibleSystemException {
-        this.runSampler(constraintsSystem, numberOfSamples, false, consumer);
+        this.runSampler(constraintsSystem, numberOfSamples, null, false, consumer);
     }
 
     /**
@@ -79,15 +79,41 @@ public class SamplerRunner {
      * @throws InfeasibleSystemException
      */
     public void sample(ConstraintsSystem constraintsSystem, int numberOfSamples, boolean startFromRandomizedPoint, SampleConsumer consumer) throws UnboundedSystemException, InfeasibleSystemException {
-        this.runSampler(constraintsSystem, numberOfSamples, startFromRandomizedPoint, consumer);
+        this.runSampler(constraintsSystem, numberOfSamples, null, startFromRandomizedPoint, consumer);
     }
 
-    private double[][] runSampler(ConstraintsSystem constraintsSystem, int numberOfSamples, boolean startFromRandomizedPoint, SampleConsumer consumer) throws UnboundedSystemException, InfeasibleSystemException {
+    public double[][] sample(ConstraintsSystem constraintsSystem, int numberOfSamples, double[] startPoint) throws UnboundedSystemException, InfeasibleSystemException {
+        return this.runSampler(constraintsSystem, numberOfSamples, startPoint, false, null);
+    }
+
+    public void sample(ConstraintsSystem constraintsSystem, int numberOfSamples, double[] startPoint, SampleConsumer consumer) throws UnboundedSystemException, InfeasibleSystemException {
+        this.runSampler(constraintsSystem, numberOfSamples, startPoint, false, consumer);
+    }
+
+    /**
+     * @param constraintsSystem        system of linear constraints (Ax&le;b, Cx=d) that is expected to be consistent and Ax&le;b to be full-dimensional
+     * @param numberOfSamples          number of samples
+     * @param startPoint               starting point, assumed to satisfy constraintsSystem
+     * @param startFromRandomizedPoint whether to start from randomized point; taken into account iff start == null
+     * @param consumer                 optional samples consumer
+     * @return
+     * @throws UnboundedSystemException
+     * @throws InfeasibleSystemException
+     */
+    private double[][] runSampler(ConstraintsSystem constraintsSystem, int numberOfSamples, double[] startPoint, boolean startFromRandomizedPoint, SampleConsumer consumer) throws UnboundedSystemException, InfeasibleSystemException {
+        if (startPoint != null && constraintsSystem.getNumberOfVariables() != startPoint.length) {
+            throw new IllegalArgumentException("Start point has invalid length.");
+        }
+
         Transformation transformation = new Transformation(constraintsSystem.getC(), constraintsSystem.getD(), constraintsSystem.getNumberOfVariables());
         double[][] samples = null;
 
         if (transformation.getTransformationMatrix()[0].length == 1) {
             if (consumer == null) {
+                if (startPoint != null) {
+                    throw new RuntimeException("Why to use startPoint when constraint system is reduced to a point?"); //fixme Fix this behave
+                }
+
                 samples = new double[numberOfSamples][constraintsSystem.getNumberOfVariables()];
 
                 for (int i = 0; i < numberOfSamples; i++) {
@@ -100,16 +126,23 @@ public class SamplerRunner {
             }
         } else {
             double[][] transformedInequalitiesLhs = transformation.reduceDimensionality(constraintsSystem.getA());
-            double[] startPoint = new InteriorPoint(this.random).generate(transformedInequalitiesLhs, constraintsSystem.getB(), this.glpSolver, startFromRandomizedPoint, true);
+            double[] transformedStartPoint;
+
+            if (startPoint == null) {
+                transformedStartPoint = new InteriorPoint(this.random).generate(transformedInequalitiesLhs, constraintsSystem.getB(), this.glpSolver, startFromRandomizedPoint, true);
+            } else {
+                transformedStartPoint = transformation.reduceDimensionality(new double[][]{startPoint})[0];
+                transformedStartPoint[transformedStartPoint.length - 1] = 1.0;
+            }
 
             if (consumer == null) {
-                samples = this.sampler.sample(transformedInequalitiesLhs, constraintsSystem.getB(), true, startPoint, numberOfSamples);
+                samples = this.sampler.sample(transformedInequalitiesLhs, constraintsSystem.getB(), true, transformedStartPoint, numberOfSamples);
                 samples = transformation.extendBackToOriginalDimensionality(samples);
             } else {
                 for (int i = 0; i < numberOfSamples; i++) {
-                    double[] sample = this.sampler.sample(transformedInequalitiesLhs, constraintsSystem.getB(), true, startPoint, 1)[0];
+                    double[] sample = this.sampler.sample(transformedInequalitiesLhs, constraintsSystem.getB(), true, transformedStartPoint, 1)[0];
                     consumer.consume(transformation.extendBackToOriginalDimensionality(sample));
-                    startPoint = sample;
+                    transformedStartPoint = sample;
                 }
             }
         }
