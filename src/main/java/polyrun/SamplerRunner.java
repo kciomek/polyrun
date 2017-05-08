@@ -82,10 +82,26 @@ public class SamplerRunner {
         this.runSampler(constraintsSystem, numberOfSamples, null, startFromRandomizedPoint, consumer);
     }
 
+    /**
+     * @param constraintsSystem system of linear constraints (Ax&le;b, Cx=d) that is expected to be consistent and Ax&le;b to be full-dimensional
+     * @param numberOfSamples   number of samples
+     * @param startPoint        start point, assumed to satisfy constraintsSystem
+     * @return
+     * @throws UnboundedSystemException
+     * @throws InfeasibleSystemException
+     */
     public double[][] sample(ConstraintsSystem constraintsSystem, int numberOfSamples, double[] startPoint) throws UnboundedSystemException, InfeasibleSystemException {
         return this.runSampler(constraintsSystem, numberOfSamples, startPoint, false, null);
     }
 
+    /**
+     * @param constraintsSystem system of linear constraints (Ax&le;b, Cx=d) that is expected to be consistent and Ax&le;b to be full-dimensional
+     * @param numberOfSamples   number of samples
+     * @param startPoint        start point, assumed to satisfy constraintsSystem
+     * @param consumer          samples consumer
+     * @throws UnboundedSystemException
+     * @throws InfeasibleSystemException
+     */
     public void sample(ConstraintsSystem constraintsSystem, int numberOfSamples, double[] startPoint, SampleConsumer consumer) throws UnboundedSystemException, InfeasibleSystemException {
         this.runSampler(constraintsSystem, numberOfSamples, startPoint, false, consumer);
     }
@@ -93,7 +109,7 @@ public class SamplerRunner {
     /**
      * @param constraintsSystem        system of linear constraints (Ax&le;b, Cx=d) that is expected to be consistent and Ax&le;b to be full-dimensional
      * @param numberOfSamples          number of samples
-     * @param startPoint               starting point, assumed to satisfy constraintsSystem
+     * @param startPoint               start point, assumed to satisfy constraintsSystem
      * @param startFromRandomizedPoint whether to start from randomized point; taken into account iff start == null
      * @param consumer                 optional samples consumer
      * @return
