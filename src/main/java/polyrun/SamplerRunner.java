@@ -12,7 +12,10 @@ import java.util.Random;
 /**
  * Runner of {@link Sampler}. Prepares system of constraints, generates start point and allows to process samples
  * of generated sampled using interface {@link SampleConsumer}.
+ *
+ * @deprecated This class will be removed in version 1.0.0. Use {@link PolytopeRunner} instead.
  */
+@Deprecated
 public class SamplerRunner {
     private final Sampler sampler;
     private final Random random;
@@ -127,7 +130,7 @@ public class SamplerRunner {
         if (transformation.getTransformationMatrix()[0].length == 1) {
             if (consumer == null) {
                 if (startPoint != null) {
-                    throw new RuntimeException("Why to use startPoint when constraint system is reduced to a point?"); //fixme Fix this behave
+                    throw new RuntimeException("Why to use startPoint when constraint system is reduced to a point?"); //fixme Fix this behaviour
                 }
 
                 samples = new double[numberOfSamples][constraintsSystem.getNumberOfVariables()];

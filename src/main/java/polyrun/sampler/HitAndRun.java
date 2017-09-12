@@ -1,5 +1,6 @@
 package polyrun.sampler;
 
+import polyrun.PolytopeRunner;
 import polyrun.UnitNSphere;
 import polyrun.thinning.ThinningFunction;
 
@@ -7,7 +8,10 @@ import java.util.Random;
 
 /**
  * HitAndRun sampler. It provides method to sample uniformly from convex polytope described by a system of linear inequalities Ax &le; b.
+ *
+ * @deprecated This class will be removed in version 1.0.0. Use {@link PolytopeRunner} and classes from package {@link polyrun.sampling} instead.
  */
+@Deprecated
 public class HitAndRun implements Sampler {
     private final ThinningFunction thinningFunction;
     private final Random random;
@@ -134,7 +138,7 @@ public class HitAndRun implements Sampler {
                     // bg == ed => polytope defined by provided set of inequalities Ax <= b is not full-dimensional
                     // bg > ed => something went wrong/method error
                     // above cases are considered together due to computer inaccuracy; possible split into two conditions:
-                    throw new RuntimeException("Polytope defined by provided set of inequalities is not full-dimensional or method error.");
+                    throw new RuntimeException("PolytopeRunner defined by provided set of inequalities is not full-dimensional or method error.");
 
                     // it also fails if sampler will be right in one of the vertices and direction 'd' will not allow to move anywhere; the probability of such situation goes to zero
                 }

@@ -1,10 +1,11 @@
 package polyrun.cli;
 
+import polyrun.PolytopeRunner;
 import polyrun.SampleConsumer;
-import polyrun.SamplerRunner;
 import polyrun.constraints.Constraint;
 import polyrun.constraints.ConstraintsSystem;
-import polyrun.sampler.HitAndRun;
+import polyrun.sampling.HitAndRun;
+import polyrun.solver.CommonMathGLPSolverWrapper;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -34,8 +35,10 @@ class Main {
             ConstraintsSystem constraintsSystem = Main.readConstraintSystem(cli.getInputFilePath());
 
             // Sample
-            new SamplerRunner(new HitAndRun(cli.getThinningFunction(), new Random(cli.getSeed()))).sample(
-                    constraintsSystem,
+            PolytopeRunner polytopeRunner = new PolytopeRunner(constraintsSystem);
+            polytopeRunner.setAnyStartPoint(new CommonMathGLPSolverWrapper());
+            polytopeRunner.chain(new HitAndRun(new Random(cli.getSeed())),
+                    cli.getThinningFunction(),
                     cli.getNumberOfSamples(),
                     new SampleConsumer() {
                         @Override

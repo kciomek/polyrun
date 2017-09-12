@@ -27,7 +27,7 @@ The software provides a method for sampling from convex polytopes defined by a s
 
 which is expected to be consistent and reduced (including Ax <= b to be full-dimensional ,i.e., its volume to be greater than 0).
 Such system describes a sampling space that can be defined using class _polyrun.constraints.ConstraintsSystem_.
-Its internal representation consists of matrices A, C and vectors b, d, and it can be constructed
+Its internal representation consists of matrices A, C and vectors b, d. _ConstraintsSystem_ can be constructed
 directly on them as well as on a set of constraints in form of LHS x _o_ RHS, where LHS is a matrix of coefficients,
 and _o_ represents constraint directions ("<=", "=>" or "=").
 
@@ -37,7 +37,7 @@ Hence, to define sampling space which satisfies the inequalities:
         y >= 0
     x + y <= 1
 
-it should be coded as:
+use:
 
     final double[][] lhs = new double[][]{
             {1, 0},
@@ -49,19 +49,29 @@ it should be coded as:
 
     ConstraintsSystem constraintsSystem = new ConstraintsSystem(lhs, dir, rhs);
 
-To generate random samples from the built system use _polyrun.SamplerRunner_ with _polyrun.sampler.HitAndRun_
-as sampling algorithm:
+Then, initialize _polyrun.PolytopeRunner_ with the constraints system:
 
-    SamplerRunner runner = new SamplerRunner(new HitAndRun(new LogarithmicallyScalableThinningFunction(1.0)));
+    PolytopeRunner runner = new PolytopeRunner(constraintsSystem);
 
+Now, the polytope can be explored with any _polytope.sampling.RandomWalk_. The library offers _HitAndRun_, _BallWalk_
+and _GridWalk_ (see javadoc for details). At first, a start point has to be set:
 
-It requires thinning function to generate samples from uniform distribution.
-By default you can use _polyrun.thinning.LogarithmicallyScalableThinningFunction_ with _scalingFactor = 1.0_ 
-(as in the above example). But you can specify your own one by implementing interface _polyrun.thinning.ThinningFunction_.
+    runner.setAnyStartPoint(); // sets a point that is a result of slack
+                               // maximization between edges of the polytope
+    
+Or, alternatively, a custom start point can be set with _runner.setStartPoint(customPoint)_, where _customPoint_ is
+required to be an interior point of the polytope.
 
-Now, sampler can be run:
+To generate 1000 samples from uniform distribution use:
 
-    double[][] samples = runner.sample(constraintsSystem, 10000);
+    double[][] samples = runner.chain(new HitAndRun(),
+                                      new LogarithmicallyScalableThinningFunction(1.0),
+                                      1000);                 
+
+Sampling method needs thinning function to generate samples from required distribution. It allows to specify how many
+samples should be skipped in the chain. By default you can use _polyrun.thinning.LogarithmicallyScalableThinningFunction_
+with _scalingFactor = 1.0_ (as in the example above). But you can specify your own one by implementing interface
+_polyrun.thinning.ThinningFunction_.
 
 Moreover, you may want to fetch samples instantly instead of waiting and storing all of them. In order to achieve this,
 you will need to implement interface _polyrun.SampleConsumer_, e.g.:
@@ -74,7 +84,10 @@ you will need to implement interface _polyrun.SampleConsumer_, e.g.:
 
 and then run sampler in different way:
 
-    runner.sample(constraintsSystem, 10000, new MySampleConsumer());
+    runner.chain(new HitAndRun(),
+                 new LinearlyScalableThinningFunction(1.0),
+                 1000,
+                 new MySampleConsumer());
 
 ## License
 
