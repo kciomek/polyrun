@@ -1,5 +1,8 @@
 package polyrun.sampling;
 
+import org.apache.commons.math3.random.MersenneTwister;
+import org.apache.commons.math3.random.RandomAdaptor;
+
 import java.util.Random;
 
 /**
@@ -14,7 +17,7 @@ public class GridWalk extends RandomWalk {
      * @param gridSpacing grid spacing
      */
     public GridWalk(double gridSpacing) {
-        this(new Random(), gridSpacing);
+        this(new RandomAdaptor(new MersenneTwister()), gridSpacing);
     }
 
     /**

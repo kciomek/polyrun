@@ -1,6 +1,8 @@
 package polyrun.sampling;
 
 
+import org.apache.commons.math3.random.MersenneTwister;
+import org.apache.commons.math3.random.RandomAdaptor;
 import polyrun.UnitNSphere;
 
 import java.util.Random;
@@ -19,7 +21,7 @@ public class BallWalk extends RandomWalk {
      * @param reflection whether to reflect a step ({@code true}) or crop to edge ({@code false}) when step exceeds polytope
      */
     public BallWalk(double radius, boolean reflection) {
-        this(new Random(), radius, reflection);
+        this(new RandomAdaptor(new MersenneTwister()), radius, reflection);
     }
 
     /**

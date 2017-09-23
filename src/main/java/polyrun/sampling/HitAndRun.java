@@ -1,6 +1,8 @@
 package polyrun.sampling;
 
 
+import org.apache.commons.math3.random.MersenneTwister;
+import org.apache.commons.math3.random.RandomAdaptor;
 import polyrun.UnitNSphere;
 
 import java.util.Random;
@@ -14,7 +16,7 @@ public class HitAndRun extends RandomWalk {
     private final UnitNSphere unitNSphere;
 
     public HitAndRun() {
-        this(new Random());
+        this(new RandomAdaptor(new MersenneTwister()));
     }
 
     public HitAndRun(Random random) {

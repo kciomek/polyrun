@@ -1,5 +1,7 @@
 package polyrun.cli;
 
+import org.apache.commons.math3.random.MersenneTwister;
+import org.apache.commons.math3.random.RandomAdaptor;
 import polyrun.PolytopeRunner;
 import polyrun.SampleConsumer;
 import polyrun.constraints.Constraint;
@@ -37,7 +39,7 @@ class Main {
             // Sample
             PolytopeRunner polytopeRunner = new PolytopeRunner(constraintsSystem);
             polytopeRunner.setAnyStartPoint(new CommonMathGLPSolverWrapper());
-            polytopeRunner.chain(new HitAndRun(new Random(cli.getSeed())),
+            polytopeRunner.chain(new HitAndRun(new RandomAdaptor(new MersenneTwister(cli.getSeed()))),
                     cli.getThinningFunction(),
                     cli.getNumberOfSamples(),
                     new SampleConsumer() {
@@ -48,8 +50,6 @@ class Main {
                             for (double val : sample) {
                                 sb.append(Double.toString(val)).append("\t");
                             }
-
-                            System.out.println(sb.deleteCharAt(sb.length() - 1).toString());
                         }
                     });
         } catch (Exception ex) {

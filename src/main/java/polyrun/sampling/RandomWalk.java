@@ -10,19 +10,22 @@ public abstract class RandomWalk {
      * It starts in {@code from} and fills array {@code to} with generated sample. Note, that {@code to} may be
      * the same reference as {@code from} if overwriting is needed.
      *
-     * @param A               lhs coefficients
-     * @param b               rhs coefficients
-     * @param homogeneous     whether provided system is in homogeneous coordinates
-     * @param adBuffer        buffer (required to be of length of {@code b})
-     * @param baxBuffer       buffer (required to be of length of {@code b})
-     * @param directionBuffer buffer (required to be of length of {@code A[0]})
-     * @param from            start point
-     * @param to              point to be filled by a method (required to be of length of {@code from});
-     *                        it may be the same reference as {@code from} if overwriting is needed
+     * @param A                           lhs coefficients
+     * @param indicesOfNonZeroElementsInA array of array of indices of non-zero elements in A (if not provided
+     *                                    the method will iterate over all elements in each row of A; use only if A is
+     *                                    relatively sparse)
+     * @param b                           rhs coefficients
+     * @param homogeneous                 whether provided system is in homogeneous coordinates
+     * @param directionBuffer             buffer (required to be of length of {@code A[0]})
+     * @param from                        start point
+     * @param to                          point to be filled by a method (required to be of length of {@code from});
+     *                                    it may be the same reference as {@code from} if overwriting is needed
      */
-    public void next(double[][] A, double[] b, boolean homogeneous,
-                     double[] adBuffer, double[] baxBuffer, double[] directionBuffer,
+    public void next(double[][] A, int[][] indicesOfNonZeroElementsInA,
+                     double[] b, boolean homogeneous,
+                     double[] directionBuffer,
                      double[] from, double[] to) {
+
         // Generate direction
         this.fillDirectionVector(directionBuffer, homogeneous);
 
@@ -30,30 +33,48 @@ public abstract class RandomWalk {
         double bg = Double.NaN;
         double ed = Double.NaN;
 
-        for (int j = 0; j < b.length; j++) {
-            adBuffer[j] = 0.0;
-            for (int i = 0; i < A[0].length; i++) {
-                adBuffer[j] += A[j][i] * directionBuffer[i];
-            }
-        }
+        if (indicesOfNonZeroElementsInA != null) {
+            for (int j = 0; j < b.length; j++) {
+                double ad = 0.0;
+                double bax = b[j];
 
-        for (int j = 0; j < b.length; j++) {
-            baxBuffer[j] = b[j];
-            for (int i = 0; i < A[0].length; i++) {
-                baxBuffer[j] -= A[j][i] * from[i];
-            }
-        }
-
-        for (int j = 0; j < b.length; j++) {
-            if (adBuffer[j] < 0.0) {
-                double nV = baxBuffer[j] / adBuffer[j];
-                if (Double.isNaN(bg) || bg < nV) {
-                    bg = nV;
+                for (int i : indicesOfNonZeroElementsInA[j]) {
+                    ad += A[j][i] * directionBuffer[i];
+                    bax -= A[j][i] * from[i];
                 }
-            } else if (adBuffer[j] > 0.0) {
-                double nV = baxBuffer[j] / adBuffer[j];
-                if (Double.isNaN(ed) || ed > nV) {
-                    ed = nV;
+
+                if (ad < 0.0) {
+                    double nV = bax / ad;
+                    if (Double.isNaN(bg) || bg < nV) {
+                        bg = nV;
+                    }
+                } else if (ad > 0.0) {
+                    double nV = bax / ad;
+                    if (Double.isNaN(ed) || ed > nV) {
+                        ed = nV;
+                    }
+                }
+            }
+        } else {
+            for (int j = 0; j < b.length; j++) {
+                double ad = 0.0;
+                double bax = b[j];
+
+                for (int i = 0; i < A[0].length; i++) {
+                    ad += A[j][i] * directionBuffer[i];
+                    bax -= A[j][i] * from[i];
+                }
+
+                if (ad < 0.0) {
+                    double nV = bax / ad;
+                    if (Double.isNaN(bg) || bg < nV) {
+                        bg = nV;
+                    }
+                } else if (ad > 0.0) {
+                    double nV = bax / ad;
+                    if (Double.isNaN(ed) || ed > nV) {
+                        ed = nV;
+                    }
                 }
             }
         }
@@ -103,7 +124,7 @@ public abstract class RandomWalk {
 
     /**
      * Selects length of next step (see
-     * {@link RandomWalk#next(double[][], double[], boolean, double[], double[], double[], double[], double[])},
+     * {@link RandomWalk#next(double[][], int[][], double[], boolean, double[], double[], double[])},
      * where {@code to = directionBuffer * stepLength + from}).
      *
      * @param direction direction of next step

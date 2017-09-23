@@ -6,8 +6,12 @@ import polyrun.exceptions.UnboundedSystemException;
 import polyrun.sampling.RandomWalk;
 import polyrun.solver.CommonMathGLPSolverWrapper;
 import polyrun.solver.GLPSolver;
+import polyrun.solver.SolverResult;
 import polyrun.thinning.NoThinning;
 import polyrun.thinning.ThinningFunction;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents runner that can generates samples from a polytope using any {@link RandomWalk}.
@@ -16,25 +20,112 @@ public class PolytopeRunner {
 
     private final ConstraintsSystem constraintsSystem;
     private final Transformation transformation;
-    private final double[][] transformedA;
-
-    private final double[] adBuffer;
-    private final double[] baxBuffer;
+    private double[][] A;
+    private final int[][] nonZeroElementsInA;
+    private final double[] b;
     private final double[] directionBuffer;
 
     private double[] startPoint;
 
+    /**
+     * @param constraintsSystem system of constraints
+     */
     public PolytopeRunner(ConstraintsSystem constraintsSystem) {
+        this(constraintsSystem, new CommonMathGLPSolverWrapper(), true);
+    }
+
+    /**
+     * @param constraintsSystem          system of constraints
+     * @param removeRedundantConstraints whether to remove redundant constraints (after initial transformation) or not;
+     *                                   use for better performance if there may be some redundant constrains
+     * @param skipZeroElements           whether {@code RandomWalk} should iterate over array of indices of non-zero
+     *                                   elements or directly over entire transformed matrix A (from {@code constraintsSystem})
+     */
+    public PolytopeRunner(ConstraintsSystem constraintsSystem, boolean removeRedundantConstraints, boolean skipZeroElements) {
+        this(constraintsSystem, removeRedundantConstraints ? new CommonMathGLPSolverWrapper() : null, skipZeroElements);
+    }
+
+    /**
+     * @param constraintsSystem system of constraints
+     * @param glpSolver         solver; if not null redundant constrains will be removed;
+     *                          provide for better performance if there may be some redundant constrains
+     * @param skipZeroElements  whether {@code RandomWalk} should iterate over array of indices of non-zero
+     *                          elements or directly over entire transformed matrix A (from {@code constraintsSystem})
+     */
+    public PolytopeRunner(ConstraintsSystem constraintsSystem, GLPSolver glpSolver, boolean skipZeroElements) {
         this.constraintsSystem = constraintsSystem;
         this.transformation = new Transformation(constraintsSystem.getC(), constraintsSystem.getD(), constraintsSystem.getNumberOfVariables());
 
         if (transformation.getTransformationMatrix()[0].length == 1) {
             throw new IllegalArgumentException("Polytope is reduced to a point.");
         } else {
-            this.transformedA = transformation.reduceDimensionality(constraintsSystem.getA());
-            this.adBuffer = new double[this.constraintsSystem.getB().length];
-            this.baxBuffer = new double[this.constraintsSystem.getB().length];
-            this.directionBuffer = new double[this.transformedA[0].length];
+            double[][] transformed = transformation.reduceDimensionality(constraintsSystem.getA());
+
+            if (glpSolver != null) {
+                List<Integer> redundantConstraints = new ArrayList<Integer>();
+
+                for (int i = 0; i < transformed.length; i++) {
+                    double[] reducedB = new double[transformed.length];
+                    System.arraycopy(constraintsSystem.getB(), 0, reducedB, 0, constraintsSystem.getB().length);
+                    reducedB[i] += 1;
+
+                    try {
+                        SolverResult solverResult = glpSolver.solve(GLPSolver.Direction.Maximize,
+                                transformed[i],
+                                new ConstraintsSystem(transformed, reducedB));
+
+                        if (!solverResult.isFeasible()) {
+                            throw new RuntimeException("Infeasible system.");
+                        }
+
+                        if (solverResult.getValue() < constraintsSystem.getB()[i]) {
+                            redundantConstraints.add(i);
+                        }
+                    } catch (UnboundedSystemException e) {
+                        throw new RuntimeException("Unbounded system.", e);
+                    }
+                }
+
+                this.A = new double[transformed.length - redundantConstraints.size()][];
+                this.b = new double[transformed.length - redundantConstraints.size()];
+
+                int index = 0;
+                for (int i = 0; i < transformed.length; i++) {
+                    if (!redundantConstraints.contains(i)) {
+                        this.A[index] = transformed[i];
+                        this.b[index] = constraintsSystem.getB()[i];
+                        index++;
+                    }
+                }
+            } else {
+                this.A = transformed;
+                this.b = constraintsSystem.getB();
+            }
+
+            if (skipZeroElements) {
+                this.nonZeroElementsInA = new int[A.length][];
+
+                for (int i = 0; i < this.A.length; i++) {
+                    List<Integer> row = new ArrayList<Integer>();
+
+                    for (int j = 0; j < this.A[i].length; j++) {
+                        if (this.A[i][j] != 0.0) {
+                            row.add(j);
+                        }
+                    }
+
+                    int[] iRow = new int[row.size()];
+                    for (int j = 0; j < row.size(); j++) {
+                        iRow[j] = row.get(j);
+                    }
+
+                    nonZeroElementsInA[i] = iRow;
+                }
+            } else {
+                this.nonZeroElementsInA = null;
+            }
+
+            this.directionBuffer = new double[this.A[0].length];
         }
     }
 
@@ -43,12 +134,12 @@ public class PolytopeRunner {
             throw new RuntimeException("Start point is not set. Use method setStartPoint() or setAnyStartPoint().");
         }
 
-        final int toSkip = thinningFunction.getThinningFactor(transformedA[0].length - 1);
+        final int stepsPerSample = thinningFunction.getThinningFactor(A[0].length - 1);
 
         for (int i = 0; i < numberOfSamples; i++) {
-            for (int j = 0; j < toSkip; j++) {
-                randomWalk.next(transformedA, constraintsSystem.getB(), true,
-                        adBuffer, baxBuffer, directionBuffer,
+            for (int j = 0; j < stepsPerSample; j++) {
+                randomWalk.next(A, nonZeroElementsInA,
+                        b, true, directionBuffer,
                         startPoint, dest);
             }
 
@@ -153,7 +244,7 @@ public class PolytopeRunner {
      *                                   (in such a case polytope cannot be sampled)
      */
     public void setAnyStartPoint(GLPSolver glpSolver) throws UnboundedSystemException, InfeasibleSystemException {
-        this.startPoint = new InteriorPoint().generate(this.transformedA, constraintsSystem.getB(), glpSolver, false, true);
+        this.startPoint = new InteriorPoint().generate(this.A, this.b, glpSolver, false, true);
     }
 
     /**
@@ -191,14 +282,14 @@ public class PolytopeRunner {
     }
 
     private boolean isInterior(double[] pointToCheck) {
-        for (int i = 0; i < this.transformedA.length; i++) {
+        for (int i = 0; i < this.A.length; i++) {
             double ax = 0.0;
 
-            for (int j = 0; j < this.transformedA[i].length; j++) {
-                ax += this.transformedA[i][j] * pointToCheck[j];
+            for (int j = 0; j < this.A[i].length; j++) {
+                ax += this.A[i][j] * pointToCheck[j];
             }
 
-            if (ax > this.constraintsSystem.getB()[i]) {
+            if (ax > this.b[i]) {
                 return false;
             }
         }
