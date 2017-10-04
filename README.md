@@ -14,7 +14,7 @@ To add a dependency in your project's pom.xml use the following:
     <dependency>
         <groupId>com.github.kciomek</groupId>
         <artifactId>polyrun</artifactId>
-        <version>0.2.0</version>
+        <version>0.3.0</version>
     </dependency>
 
 ## Tutorial
