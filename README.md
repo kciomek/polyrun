@@ -5,7 +5,7 @@ It is written in Java.
 
 ## Documentation
 
-* [API Documentation](https://kciomek.github.io/polyrun/docs/0.2.0/api/)
+* [API Documentation](https://kciomek.github.io/polyrun/docs/0.3.0/api/index.html)
 
 ## Get latest release
 
