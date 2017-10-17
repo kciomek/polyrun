@@ -5,7 +5,7 @@ It is written in Java.
 
 ## Documentation
 
-* [API Documentation](https://kciomek.github.io/polyrun/docs/0.3.0/api/index.html)
+* [API Documentation](https://kciomek.github.io/polyrun/docs/0.3.1/api/index.html)
 
 ## Get latest release
 
@@ -14,7 +14,7 @@ To add a dependency in your project's pom.xml use the following:
     <dependency>
         <groupId>com.github.kciomek</groupId>
         <artifactId>polyrun</artifactId>
-        <version>0.3.0</version>
+        <version>0.3.1</version>
     </dependency>
 
 ## Tutorial

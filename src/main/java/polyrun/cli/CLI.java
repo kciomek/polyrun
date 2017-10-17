@@ -101,7 +101,7 @@ class CLI {
         }
 
         if (cmd.hasOption("version")) {
-            System.out.println("0.3.0"); // todo: read from resources
+            System.out.println("0.3.1"); // todo: read from resources
             System.exit(0);
         }
 

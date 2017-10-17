@@ -50,6 +50,8 @@ class Main {
                             for (double val : sample) {
                                 sb.append(Double.toString(val)).append("\t");
                             }
+
+                            System.out.println(sb.deleteCharAt(sb.length() - 1).toString());
                         }
                     });
         } catch (Exception ex) {
