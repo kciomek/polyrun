@@ -43,7 +43,7 @@ public class GridWalk extends RandomWalk {
     }
 
     @Override
-    protected double selectStepLength(double[] direction, double bg, double ed) {
+    protected double selectStepLength(int dim, double bg, double ed) {
         if (this.gridSpacing >= ed) {
             return 0.0;
         } else {

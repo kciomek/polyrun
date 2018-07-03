@@ -107,7 +107,7 @@ public abstract class RandomWalk {
         }
 
         // Select a step size
-        double stepLength = this.selectStepLength(directionBuffer, bg, ed);
+        double stepLength = this.selectStepLength(homogeneous ? directionBuffer.length - 1 : directionBuffer.length, bg, ed);
 
         for (int i = 0; i < A[0].length; i++) {
             to[i] = directionBuffer[i] * stepLength + from[i];
@@ -127,10 +127,10 @@ public abstract class RandomWalk {
      * {@link RandomWalk#next(double[][], int[][], double[], boolean, double[], double[], double[])},
      * where {@code to = directionBuffer * stepLength + from}).
      *
-     * @param direction direction of next step
-     * @param bg        maximal step backward (non-positive)
-     * @param ed        maximal step forward (non-negative)
+     * @param dim dimensionality
+     * @param bg  maximal step backward (non-positive)
+     * @param ed  maximal step forward (non-negative)
      * @return step length
      */
-    protected abstract double selectStepLength(double[] direction, double bg, double ed);
+    protected abstract double selectStepLength(int dim, double bg, double ed);
 }

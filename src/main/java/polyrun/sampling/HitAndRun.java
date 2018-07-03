@@ -30,7 +30,7 @@ public class HitAndRun extends RandomWalk {
     }
 
     @Override
-    protected double selectStepLength(double[] direction, double bg, double ed) {
+    protected double selectStepLength(int dim, double bg, double ed) {
         return (bg + (ed - bg) * this.random.nextDouble());
     }
 }
