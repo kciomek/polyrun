@@ -14,30 +14,37 @@ public class BallWalk extends RandomWalk {
 
     private final UnitNSphere unitNSphere;
     private final double radius;
-    private final boolean reflection;
+    private final OutOfBoundsBehaviour outOfBoundsBehaviour;
     private final Random random;
 
     /**
-     * @param radius     radius of a ball
-     * @param reflection whether to reflect a step ({@code true}) or crop to edge ({@code false}) when step exceeds polytope
+     * @param radius radius of a ball
      */
-    public BallWalk(double radius, boolean reflection) {
-        this(new RandomAdaptor(new MersenneTwister()), radius, reflection);
+    public BallWalk(double radius) {
+        this(new RandomAdaptor(new MersenneTwister()), radius, OutOfBoundsBehaviour.Stay);
     }
 
     /**
-     * @param random     random number generator
-     * @param radius     radius of a ball
-     * @param reflection whether to reflect a step ({@code true}) or crop to edge ({@code false}) when step exceeds polytope
+     * @param radius               radius of a ball
+     * @param outOfBoundsBehaviour the behaviour of random walk when it tries to make a step that exceeds bounds of the polytope
      */
-    public BallWalk(Random random, double radius, boolean reflection) {
+    public BallWalk(double radius, OutOfBoundsBehaviour outOfBoundsBehaviour) {
+        this(new RandomAdaptor(new MersenneTwister()), radius, outOfBoundsBehaviour);
+    }
+
+    /**
+     * @param random               random number generator
+     * @param radius               radius of a ball
+     * @param outOfBoundsBehaviour the behaviour of random walk when it tries to make a step that exceeds bounds of the polytope
+     */
+    public BallWalk(Random random, double radius, OutOfBoundsBehaviour outOfBoundsBehaviour) {
         if (radius <= 0.0) {
             throw new IllegalArgumentException("Radius have to be positive.");
         }
 
         this.unitNSphere = new UnitNSphere(random);
         this.radius = radius;
-        this.reflection = reflection;
+        this.outOfBoundsBehaviour = outOfBoundsBehaviour;
         this.random = random;
     }
 
@@ -50,16 +57,12 @@ public class BallWalk extends RandomWalk {
     protected double selectStepLength(int dim, double bg, double ed) {
         double step = Math.pow(random.nextDouble(), 1.0 / (double) dim) * this.radius;
 
-        if (this.reflection) {
-            if (step > ed) {
-                double reflected = ed - (step - ed);
-
-                return reflected < bg ? 0.0 : reflected;
-            } else {
-                return step;
-            }
-        } else {
+        if (OutOfBoundsBehaviour.Stay.equals(this.outOfBoundsBehaviour)) {
+            return step > ed ? 0.0 : step;
+        } else if (OutOfBoundsBehaviour.Crop.equals(this.outOfBoundsBehaviour)) {
             return Math.min(ed, step);
+        } else {
+            throw new RuntimeException("Not supported outOfBoundsBehaviour.");
         }
     }
 }

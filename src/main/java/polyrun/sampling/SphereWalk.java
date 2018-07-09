@@ -14,29 +14,29 @@ public class SphereWalk extends RandomWalk {
 
     private final UnitNSphere unitNSphere;
     private final double radius;
-    private final boolean reflection;
+    private final OutOfBoundsBehaviour outOfBoundsBehaviour;
 
     /**
-     * @param radius     radius of a sphere
-     * @param reflection whether to reflect a step ({@code true}) or crop to edge ({@code false}) when step exceeds polytope
+     * @param radius               radius of a sphere
+     * @param outOfBoundsBehaviour the behaviour of random walk when it tries to make a step that exceeds bounds of the polytope
      */
-    public SphereWalk(double radius, boolean reflection) {
-        this(new RandomAdaptor(new MersenneTwister()), radius, reflection);
+    public SphereWalk(double radius, OutOfBoundsBehaviour outOfBoundsBehaviour) {
+        this(new RandomAdaptor(new MersenneTwister()), radius, outOfBoundsBehaviour);
     }
 
     /**
-     * @param random     random number generator
-     * @param radius     radius of a sphere
-     * @param reflection whether to reflect a step ({@code true}) or crop to edge ({@code false}) when step exceeds polytope
+     * @param random               random number generator
+     * @param radius               radius of a sphere
+     * @param outOfBoundsBehaviour the behaviour of random walk when it tries to make a step that exceeds bounds of the polytope
      */
-    public SphereWalk(Random random, double radius, boolean reflection) {
+    public SphereWalk(Random random, double radius, OutOfBoundsBehaviour outOfBoundsBehaviour) {
         if (radius <= 0.0) {
             throw new IllegalArgumentException("Radius have to be positive.");
         }
 
         this.unitNSphere = new UnitNSphere(random);
         this.radius = radius;
-        this.reflection = reflection;
+        this.outOfBoundsBehaviour = outOfBoundsBehaviour;
     }
 
     @Override
@@ -46,16 +46,12 @@ public class SphereWalk extends RandomWalk {
 
     @Override
     protected double selectStepLength(int dim, double bg, double ed) {
-        if (this.reflection) {
-            if (this.radius > ed) {
-                double reflected = ed - (this.radius - ed);
-
-                return reflected < bg ? 0.0 : reflected;
-            } else {
-                return this.radius;
-            }
-        } else {
+        if (OutOfBoundsBehaviour.Stay.equals(this.outOfBoundsBehaviour)) {
+            return this.radius > ed ? 0.0 : this.radius;
+        } else if (OutOfBoundsBehaviour.Crop.equals(this.outOfBoundsBehaviour)) {
             return Math.min(ed, this.radius);
+        } else {
+            throw new RuntimeException("Not supported outOfBoundsBehaviour.");
         }
     }
 }
