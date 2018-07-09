@@ -6,7 +6,7 @@
 
     <groupId>com.github.kciomek</groupId>
     <artifactId>polyrun</artifactId>
-    <version>0.3.2-SNAPSHOT</version>
+    <version>0.3.2</version>
     <packaging>jar</packaging>
 
     <properties>

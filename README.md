@@ -5,7 +5,7 @@ It is written in Java.
 
 ## Documentation
 
-* [API Documentation](https://kciomek.github.io/polyrun/docs/0.3.1/api/index.html)
+* [API Documentation](https://kciomek.github.io/polyrun/docs/0.3.2/api/index.html)
 
 ## Get latest release
 
@@ -14,7 +14,7 @@ To add a dependency in your project's pom.xml use the following:
     <dependency>
         <groupId>com.github.kciomek</groupId>
         <artifactId>polyrun</artifactId>
-        <version>0.3.1</version>
+        <version>0.3.2</version>
     </dependency>
 
 ## Tutorial
@@ -53,8 +53,8 @@ Then, initialize _polyrun.PolytopeRunner_ with the constraints system:
 
     PolytopeRunner runner = new PolytopeRunner(constraintsSystem);
 
-Now, the polytope can be explored with any _polytope.sampling.RandomWalk_. The library offers _HitAndRun_, _BallWalk_
-and _GridWalk_ (see javadoc for details). At first, a start point has to be set:
+Now, the polytope can be explored with any _polytope.sampling.RandomWalk_. The library offers _HitAndRun_, _BallWalk_,
+_SphereWalk_ and _GridWalk_ (see javadoc for details). At first, a start point has to be set:
 
     runner.setAnyStartPoint(); // sets a point that is a result of slack
                                // maximization between edges of the polytope
@@ -93,7 +93,7 @@ and then run sampler in different way:
 
 The MIT License (MIT)
 
-Copyright (c) 2015-2017 Krzysztof Ciomek
+Copyright (c) 2015-2018 Krzysztof Ciomek
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
