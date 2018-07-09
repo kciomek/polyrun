@@ -39,7 +39,9 @@ public class GridWalk extends RandomWalk {
             direction[i] = 0.0;
         }
 
-        direction[this.random.nextInt() % (homogeneous ? direction.length : direction.length - 1)] = 1.0;
+        int index = this.random.nextInt(2 * (homogeneous ? direction.length - 1 : direction.length));
+
+        direction[index / 2] = (index % 2 == 0) ? 1.0 : -1.0;
     }
 
     @Override

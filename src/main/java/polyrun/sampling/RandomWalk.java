@@ -97,13 +97,23 @@ public abstract class RandomWalk {
         }
 
         if (bg > 0.0) {
-            // looks like previous point was outside of sampling region or accuracy error
-            throw new RuntimeException("Accuracy or method error (begin of segment).");
+            if (bg < 1e-10) {
+                // this happens very often when the current point is no the facet of the polytope (e.g., Ball-Walk or SphereWalk with cropping)
+                bg = 0.0;
+            } else {
+                // looks like previous point was outside of sampling region or accuracy error
+                throw new RuntimeException("Accuracy or method error (begin of segment).");
+            }
         }
 
         if (ed < 0.0) {
-            // looks like previous point was outside of sampling region or accuracy error
-            throw new RuntimeException("Accuracy or method error (end of segment).");
+            if (ed > -1e-10) {
+                // this happens very often when the current point is no the facet of the polytope (e.g., Ball-Walk or SphereWalk with cropping)
+                ed = 0.0;
+            } else {
+                // looks like previous point was outside of sampling region or accuracy error
+                throw new RuntimeException("Accuracy or method error (end of segment).");
+            }
         }
 
         // Select a step size
