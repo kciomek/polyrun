@@ -1,117 +1,106 @@
 package polyrun;
 
-import Jama.Matrix;
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.RRQRDecomposition;
+
+import org.ejml.data.DMatrixRMaj;
+import org.ejml.data.Matrix;
+import org.ejml.simple.SimpleMatrix;
+import org.ejml.simple.SimpleSVD;
 
 public class Transformation {
-    private final Matrix transformationMatrix;
-    private final double[] translationVector;
+    private final SimpleMatrix nullspace;
+    private final SimpleMatrix particularSolution;
 
     /**
      * Builds transformation that is based on system C x = d.
      * <p>
-     * Note: Cx = d is expected to be consistent system of equations.
+     * Note: Cx = d is expected to be consistent system of linearly independent equations.
      *
      * @param matrixC           matrix C
      * @param vectord           vector d
      * @param numberOfVariables number of variables
      */
     public Transformation(double matrixC[][], double[] vectord, int numberOfVariables) {
-        Matrix basis;
-        Matrix translation;
-
-        if (matrixC.length == 0) {
-            basis = Matrix.identity(numberOfVariables + 1, numberOfVariables + 1);
-            translation = new Matrix(numberOfVariables, 1, 0);
+        if (matrixC == null || matrixC.length == 0) {
+            this.nullspace = SimpleMatrix.identity(numberOfVariables);
+            this.particularSolution = new SimpleMatrix(numberOfVariables, 1);
         } else {
-            Matrix C = new Matrix(matrixC);
-            Matrix C_pseudoinverted = MatrixUtils.pseudoInverse(C, 1e-16);
-            Matrix C_pseudoinverted_multiplied_by_C = C_pseudoinverted.times(C);
-            Matrix I = Matrix.identity(C_pseudoinverted_multiplied_by_C.getRowDimension(),
-                    C_pseudoinverted_multiplied_by_C.getColumnDimension());
+            Matrix C = new DMatrixRMaj(matrixC);
+            SimpleMatrix d = new SimpleMatrix(vectord.length, 1, true, vectord);
+            SimpleSVD<SimpleMatrix> svd = new SimpleSVD<SimpleMatrix>(C, false);
 
-            if (MatrixUtils.isIdentity(C_pseudoinverted_multiplied_by_C, 1e-16)) {
-                basis = new Matrix(C_pseudoinverted_multiplied_by_C.getColumnDimension() + 1, 1, 0);
-                basis.set(C_pseudoinverted_multiplied_by_C.getColumnDimension(), 0, 1);
-            } else {
-                I.minusEquals(C_pseudoinverted_multiplied_by_C);
-
-                RRQRDecomposition rrqr = new org.apache.commons.math3.linear.RRQRDecomposition(new Array2DRowRealMatrix(I.getArrayCopy()));
-                Matrix Q = new Matrix(rrqr.getQ().getData());
-                Matrix Q1 = Q.getMatrix(0, C_pseudoinverted_multiplied_by_C.getRowDimension() - 1, 0, I.rank() - 1);
-
-                basis = new Matrix(Q1.getRowDimension() + 1, Q1.getColumnDimension() + 1);
-                basis.set(Q1.getRowDimension(), Q1.getColumnDimension(), 1);
-                basis.setMatrix(0, Q1.getRowDimension() - 1, 0, Q1.getColumnDimension() - 1, Q1);
+            if (svd.nullity() == 0) {
+                throw new RuntimeException("The system of equations has only one solution.");
             }
 
-            translation = C_pseudoinverted.times(new Matrix(new double[][]{vectord}).transpose());
+            SimpleMatrix W = svd.getW();
+
+            double[][] values = new double[C.getNumCols()][C.getNumRows()];
+
+            for (int i = 0; i < C.getNumCols(); i++) {
+                for (int j = 0; j < C.getNumRows(); j++) {
+                    if (i == j) {
+                        values[i][j] = W.get(i, i) > 1e-10 ? 1.0 / W.get(i, i) : 0.0;
+                    } else {
+                        values[i][j] = 0.0;
+                    }
+                }
+            }
+
+            this.nullspace = svd.nullSpace();
+            this.particularSolution = svd.getV().mult(new SimpleMatrix(values)).mult(svd.getU()).mult(d);
         }
-
-        Matrix T = Matrix.identity(translation.getRowDimension() + 1, translation.getRowDimension() + 1);
-        T.setMatrix(0, translation.getRowDimension() - 1, translation.getRowDimension(), translation.getRowDimension(), translation);
-        Matrix lastRowRemover = Matrix.identity(translation.getRowDimension(), translation.getRowDimension() + 1);
-
-        this.transformationMatrix = lastRowRemover.times(T).times(basis);
-        this.translationVector = translation.transpose().getArray()[0];
-    }
-
-    public double[][] getTransformationMatrix() {
-        return this.transformationMatrix.getArray();
-    }
-
-    public double[] getTranslationVector() {
-        return this.translationVector;
-    }
-
-    public double[][] reduceDimensionality(double[][] matrixToTransform) {
-        if (this.transformationMatrix.getRowDimension() != matrixToTransform[0].length) {
-            throw new IllegalArgumentException("Number of columns of matrix 'matrixToTransform' is invalid.");
-        }
-
-        return new Matrix(matrixToTransform).times(this.transformationMatrix).getArray();
     }
 
     /**
-     * Returns result of the following Matrix multiplication: [vector 1.0] * t(transformationMatrix), where
-     * vector is a parameter, and transformationMatrix is an internal matrix representation of the transformation.
+     * Projects input matrix onto the null space to reduce dimensionality.
+     * The aim is to prepare the sampling space to be full-dimensional.
      *
-     * @param vector vector to transform back to original dimension
-     * @return vector in original dimension
+     * @param matrixToTransform Matrix to project
+     * @return
      */
-    public double[] extendBackToOriginalDimensionality(double[] vector) {
-        if (this.transformationMatrix.getColumnDimension() != vector.length) {
-            throw new IllegalArgumentException("Length of vector is invalid.");
+    public double[][] project(double[][] matrixToTransform) {
+        if (this.nullspace.numRows() != matrixToTransform[0].length) {
+            throw new IllegalArgumentException("Number of columns of matrix 'matrixToTransform' is invalid.");
         }
 
-        double[] vectorInOriginalDimensionality = new double[this.transformationMatrix.getRowDimension()];
+        SimpleMatrix projection = new SimpleMatrix(matrixToTransform).mult(this.nullspace);
+        double[][] result = new double[projection.numRows()][projection.numCols()];
 
-        for (int i = 0; i < this.transformationMatrix.getRowDimension(); i++) {
-            vectorInOriginalDimensionality[i] = 0.0;
-
-            for (int j = 0; j < this.transformationMatrix.getColumnDimension(); j++) {
-                double vectorCell;
-                if (j < vector.length) {
-                    vectorCell = vector[j];
-                } else {
-                    vectorCell = 1.0;
-                }
-
-                vectorInOriginalDimensionality[i] += vectorCell * this.transformationMatrix.get(i, j);
+        for (int i = 0; i < projection.numRows(); i++) {
+            for (int j = 0; j < projection.numCols(); j++) {
+                result[i][j] = projection.get(i, j);
             }
         }
 
-        return vectorInOriginalDimensionality;
+        return result;
     }
 
-    public double[][] extendBackToOriginalDimensionality(double[][] matrix) {
-        double[][] result = new double[matrix.length][this.transformationMatrix.getRowDimension()];
-
-        for (int i = 0; i < result.length; i++) {
-            result[i] = this.extendBackToOriginalDimensionality(matrix[i]);
+    /**
+     * Transforms the vector from the sampling space back to the original space.
+     *
+     * @param vector vector to transform back to original dimensionality
+     * @return vector in the original dimensionality
+     */
+    public double[] projectBack(double[] vector) {
+        if (this.nullspace.numCols() != vector.length) {
+            throw new IllegalArgumentException("Length of vector is invalid.");
         }
 
-        return result;
+        return new SimpleMatrix(1, vector.length, true, vector)
+                .mult(this.nullspace.transpose())
+                .plus(this.particularSolution.transpose())
+                .getDDRM().getData();
+    }
+
+    /**
+     * Solves equation b - A * this.particularSolution
+     * @param A
+     * @param b
+     * @return
+     */
+    public double[] solveForParticularSolution(double[][] A, double[] b) {
+        return new SimpleMatrix(b.length, 1, true, b)
+                .minus(new SimpleMatrix(A).mult(this.particularSolution))
+                .getDDRM().getData();
     }
 }

@@ -4,55 +4,63 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TransformationTest {
-    private static final double accuracy = 1e-7;
+    private static final double accuracy = 1e-10;
 
     @Test
-    public void test_constructTransformationMatrix_simpleCase_1() {
+    public void nullInput() {
+        Transformation t = new Transformation(null, null, 3);
+        double[] input = new double[]{-0.1, 0.0, 0.9};
+        double[] output = t.project(new double[][]{input})[0];
+
+        Assert.assertArrayEquals(input, output, accuracy);
+    }
+
+    @Test
+    public void emptyInput() {
+        Transformation t = new Transformation(new double[0][0], new double[0], 3);
+        double[] input = new double[]{-0.1, 0.0, 0.9};
+        double[] output = t.project(new double[][]{input})[0];
+
+        Assert.assertArrayEquals(input, output, accuracy);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void exactlyOneSolutionThrows() {
+        double[][] C = new double[][]{{1, 0}, {0, 1}};
+        double[] d = new double[]{2, 3};
+
+        new Transformation(C, d, 2);
+    }
+
+    @Test
+    public void moreVariablesThanEquations() {
+        double[][] A = new double[][]{
+                new double[]{1.0, 0.0, 0.0},
+                new double[]{0.0, 1.0, 0.0},
+                new double[]{0.0, 0.0, 1.0},
+                new double[]{-1.0, 0.0, 0.0},
+                new double[]{0.0, -1.0, 0.0},
+                new double[]{0.0, 0.0, -1.0},
+        };
+        double[] b = new double[]{1.0, 1.0, 1.0, 0.0, 0.0, 0.0};
         double[][] C = new double[][]{{1, 0, 1}, {0, 1, 0}};
         double[] d = new double[]{1, 1};
-        double[][] t = new Transformation(C, d, 3).getTransformationMatrix();
-        Assert.assertArrayEquals(new double[]{-0.7071068, 0.5}, t[0], accuracy);
-        Assert.assertArrayEquals(new double[]{0.0, 1.0}, t[1], accuracy);
-        Assert.assertArrayEquals(new double[]{0.7071068, 0.5}, t[2], accuracy);
-    }
 
-    @Test
-    public void test_constructTransformationMatrix_simpleCase_2() {
-        double[][] C = new double[][]{{1, 1, 0}, {1, 0, 1}};
-        double[] d = new double[]{1, 1.5};
-        double[][] t = new Transformation(C, d, 3).getTransformationMatrix();
-        Assert.assertArrayEquals(new double[]{-0.5773503, 0.8333333}, t[0], accuracy);
-        Assert.assertArrayEquals(new double[]{0.5773503, 0.1666667}, t[1], accuracy);
-        Assert.assertArrayEquals(new double[]{0.5773503, 0.6666667}, t[2], accuracy);
-    }
+        Transformation t = new Transformation(C, d, 3);
 
-    @Test
-    public void test_transformationMatrix_emptyC() {
-        double[][] C = new double[0][];
-        double[] d = new double[0];
+        double[][] Q = t.project(A);
+        double[] q = t.solveForParticularSolution(A, b);
 
-        Transformation transformation = new Transformation(C, d, 3);
-        double[][] t = transformation.getTransformationMatrix();
+        Assert.assertEquals(A.length, Q.length);
+        Assert.assertEquals(1, Q[0].length);
+        Assert.assertArrayEquals(new double[]{0.5, 0.0, 0.5, 0.5, 1.0, 0.5}, q, accuracy);
+        Assert.assertArrayEquals(new double[]{-0.7071067811865475}, Q[0], accuracy);
 
-        Assert.assertArrayEquals(new double[]{1.0, 0.0, 0.0, 0.0}, t[0], accuracy);
-        Assert.assertArrayEquals(new double[]{0.0, 1.0, 0.0, 0.0}, t[1], accuracy);
-        Assert.assertArrayEquals(new double[]{0.0, 0.0, 1.0, 0.0}, t[2], accuracy);
-
-        Assert.assertArrayEquals(new double[]{0.0, 0.0, 0.0}, transformation.getTranslationVector(), accuracy);
-    }
-
-    @Test
-    public void test_transformationMatrix_fullC() {
-        double[][] C = new double[][]{{0.7, 0, 0}, {0, -2, 0}, {0, 0, 12.3}};
-        double[] d = new double[]{0.7, -4, 36.9};
-
-        Transformation transformation = new Transformation(C, d, 3);
-        double[][] t = transformation.getTransformationMatrix();
-
-        Assert.assertArrayEquals(new double[]{1.0}, t[0], accuracy);
-        Assert.assertArrayEquals(new double[]{2.0}, t[1], accuracy);
-        Assert.assertArrayEquals(new double[]{3.0}, t[2], accuracy);
-
-        Assert.assertArrayEquals(new double[]{1.0, 2.0, 3.0}, transformation.getTranslationVector(), accuracy);
+        double[] s1 = t.projectBack(new double[]{-0.7071067811865475});
+        double[] s2 = t.projectBack(new double[]{0.0});
+        double[] s3 = t.projectBack(new double[]{0.7071067811865475});
+        Assert.assertArrayEquals(new double[]{1.0, 1.0, 0.0}, s1, accuracy);
+        Assert.assertArrayEquals(new double[]{0.5, 1.0, 0.5}, s2, accuracy);
+        Assert.assertArrayEquals(new double[]{0.0, 1.0, 1.0}, s3, accuracy);
     }
 }
