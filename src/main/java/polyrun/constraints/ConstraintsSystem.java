@@ -201,4 +201,28 @@ public class ConstraintsSystem {
     public int getNumberOfVariables() {
         return numberOfVariables;
     }
+
+    /**
+     * Checks if x satisfy system of inequalities: Ax <= b.
+     *
+     * @param A matrix
+     * @param x vector
+     * @param b vector
+     * @return
+     */
+    public static boolean isSatisfied(double[][] A, double[] x, double[] b) {
+        for (int i = 0; i < A.length; i++) {
+            double ax = 0.0;
+
+            for (int j = 0; j < A[i].length; j++) {
+                ax += A[i][j] * x[j];
+            }
+
+            if (ax > b[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

@@ -11,14 +11,14 @@ public class InteriorPointTest {
 
     @Test
     public void test_2D_nonRandomized_square() throws Exception {
-        final double[][] A = new double[][] {
+        final double[][] A = new double[][]{
                 {1, 0},
                 {0, 1},
                 {-1, 0},
                 {0, -1}};
-        final double[] b = new double[] { 1, 1, 0, 0};
+        final double[] b = new double[]{1, 1, 0, 0};
 
-        double[] generatedPoint = new InteriorPoint().generate(A, b, new CommonMathGLPSolverWrapper(), false, false);
+        double[] generatedPoint = new InteriorPoint().generate(A, b, new CommonMathGLPSolverWrapper());
 
         Assert.assertEquals(A[0].length, generatedPoint.length);
         Assert.assertEquals(0.5, generatedPoint[0], accuracy);
@@ -27,40 +27,40 @@ public class InteriorPointTest {
 
     @Test
     public void test_2D_nonRandomized_rect() throws Exception {
-        final double[][] A = new double[][] {
+        final double[][] A = new double[][]{
                 {1, 0},
                 {0, 1},
                 {-1, 0},
                 {0, -1}};
-        final double[] b = new double[] { 1, 4, 10, -2};
+        final double[] b = new double[]{1, 4, 10, -2};
 
-        double[] generatedPoint = new InteriorPoint().generate(A, b, new CommonMathGLPSolverWrapper(), false, false);
+        double[] generatedPoint = new InteriorPoint().generate(A, b, new CommonMathGLPSolverWrapper());
 
         Assert.assertEquals(A[0].length, generatedPoint.length);
         Assert.assertEquals(0.0, generatedPoint[0], accuracy);
         Assert.assertEquals(3.0, generatedPoint[1], accuracy);
     }
 
-    @Test (expected = UnboundedSystemException.class)
+    @Test(expected = UnboundedSystemException.class)
     public void test_2D_nonRandomized_unboundedRegion_throws() throws Exception {
-        final double[][] A = new double[][] {
+        final double[][] A = new double[][]{
                 {1, 0, 0},
                 {0, 1, 0},
                 {-1, 0, 1}};
-        final double[] b = new double[] { 1, 1, 0};
+        final double[] b = new double[]{1, 1, 0};
 
-        new InteriorPoint().generate(A, b, new CommonMathGLPSolverWrapper(), false, false);
+        new InteriorPoint().generate(A, b, new CommonMathGLPSolverWrapper());
     }
 
-    @Test (expected = InfeasibleSystemException.class)
+    @Test(expected = InfeasibleSystemException.class)
     public void test_2D_nonRandomized_infeasibleRegion_throws() throws Exception {
-        final double[][] A = new double[][] {
+        final double[][] A = new double[][]{
                 {1, 0},
                 {0, 1},
                 {-1, -1},
                 {1, 0}};
-        final double[] b = new double[] { 1, 1, 0, -1};
+        final double[] b = new double[]{1, 1, 0, -1};
 
-        new InteriorPoint().generate(A, b, new CommonMathGLPSolverWrapper(), false, false);
+        new InteriorPoint().generate(A, b, new CommonMathGLPSolverWrapper());
     }
 }

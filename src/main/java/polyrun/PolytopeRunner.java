@@ -23,7 +23,7 @@ public class PolytopeRunner {
     private double[][] A;
     private final int[][] nonZeroElementsInA;
     private final double[] b;
-    private final double[] directionBuffer;
+    private final double[] buffer;
 
     private double[] startPoint;
 
@@ -123,7 +123,7 @@ public class PolytopeRunner {
             this.nonZeroElementsInA = null;
         }
 
-        this.directionBuffer = new double[this.A[0].length];
+        this.buffer = new double[this.A[0].length];
     }
 
     private void next(RandomWalk randomWalk, ThinningFunction thinningFunction, int numberOfSamples, SampleConsumer consumer, double[] dest) {
@@ -131,13 +131,11 @@ public class PolytopeRunner {
             throw new RuntimeException("Start point is not set. Use method setStartPoint() or setAnyStartPoint().");
         }
 
-        final int stepsPerSample = thinningFunction.getThinningFactor(A[0].length - 1);
+        final int stepsPerSample = thinningFunction.getThinningFactor(this.A[0].length);
 
         for (int i = 0; i < numberOfSamples; i++) {
             for (int j = 0; j < stepsPerSample; j++) {
-                randomWalk.next(A, nonZeroElementsInA,
-                        b, false, directionBuffer,
-                        startPoint, dest);
+                randomWalk.next(A, nonZeroElementsInA, b, buffer, startPoint, dest);
             }
 
             consumer.consume(this.transformation.projectBack(dest));
@@ -241,7 +239,9 @@ public class PolytopeRunner {
      *                                   (in such a case polytope cannot be sampled)
      */
     public void setAnyStartPoint(GLPSolver glpSolver) throws UnboundedSystemException, InfeasibleSystemException {
-        this.startPoint = new InteriorPoint().generate(this.A, this.b, glpSolver, false, false);
+        this.startPoint = new double[A[0].length];
+        // values has to be copied because this.startPoint can be changed by method chain
+        System.arraycopy(new InteriorPoint().generate(this.A, this.b, glpSolver), 0, startPoint, 0, A[0].length);
     }
 
     /**
@@ -256,9 +256,8 @@ public class PolytopeRunner {
         }
 
         double[] transformedPoint = this.transformation.project(new double[][]{startPoint})[0];
-        transformedPoint[transformedPoint.length - 1] = 1.0;
 
-        if (!isInterior(transformedPoint)) {
+        if (!ConstraintsSystem.isSatisfied(A, transformedPoint, b)) {
             throw new IllegalArgumentException("Interior point is required.");
         }
 
@@ -276,21 +275,5 @@ public class PolytopeRunner {
         }
 
         return this.transformation.projectBack(this.startPoint);
-    }
-
-    private boolean isInterior(double[] pointToCheck) {
-        for (int i = 0; i < this.A.length; i++) {
-            double ax = 0.0;
-
-            for (int j = 0; j < this.A[i].length; j++) {
-                ax += this.A[i][j] * pointToCheck[j];
-            }
-
-            if (ax > this.b[i]) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

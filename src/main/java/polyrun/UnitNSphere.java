@@ -25,18 +25,10 @@ public class UnitNSphere {
      * and in homogeneous coordinates coordinates vector has to be the length of n+2.
      *
      * @param vectorToFill vector to fill
-     * @param homogeneous  whether provided vector is in homogeneous coordinates
      */
-    public void fillVectorWithRandomPoint(double[] vectorToFill, boolean homogeneous) {
+    public void fillVectorWithRandomPoint(double[] vectorToFill) {
         double s = 0.0;
-        int n;
-
-        if (homogeneous) {
-            n = vectorToFill.length - 1;
-            vectorToFill[vectorToFill.length - 1] = 0.0;
-        } else {
-            n = vectorToFill.length;
-        }
+        int n = vectorToFill.length;
 
         for (int i = 0; i < n; i++) {
             vectorToFill[i] = random.nextGaussian();

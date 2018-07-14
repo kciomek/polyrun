@@ -6,6 +6,7 @@ import polyrun.exceptions.UnboundedSystemException;
 import polyrun.solver.GLPSolver;
 import polyrun.solver.SolverResult;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class InteriorPoint {
@@ -20,47 +21,31 @@ public class InteriorPoint {
     }
 
     /**
-     * Finds interior point of Ax &le; b. Note that the system is required to be full-dimensional.
+     * Finds interior point (Chebyshev center) of Ax &le; b. Note that the system is required to be full-dimensional.
      *
-     * @param A              matrix A
-     * @param b              vector b
-     * @param solver         solver
-     * @param randomizePoint whether to randomize start point (not uniformly)
-     * @param homogeneous    whether provided system is in homogeneous coordinates
+     * @param A      matrix A
+     * @param b      vector b
+     * @param solver solver
      * @return interior point
      * @throws UnboundedSystemException  if unbounded
      * @throws InfeasibleSystemException if not feasible
      */
-    public double[] generate(double[][] A, double[] b, GLPSolver solver, boolean randomizePoint, boolean homogeneous) throws UnboundedSystemException, InfeasibleSystemException {
+    public double[] generate(double[][] A, double[] b, GLPSolver solver) throws UnboundedSystemException, InfeasibleSystemException {
         int numberOfOriginalConstrains = A.length;
         int numberOfOriginalVariables = A[0].length;
-
-        double[] result = new double[numberOfOriginalVariables];
 
         // max d
         // s.t.
         // | A I  0 | |x| = b
         //            |e|
         //            |d|
-        // if homogeneous:
-        //     | w  0 0 | | | = 1
-        //                |e|
-        //                |d|, where w = [0..0 1]
         //
-        // | 0 -c 1 | |x| <= 0
+        // | 0 -1 1 | |x| <= 0
         //            |e|
         //            |d|
 
-        int numberOfEqualities;
-
-        if (homogeneous) {
-            numberOfEqualities = numberOfOriginalConstrains + 1;
-        } else {
-            numberOfEqualities = numberOfOriginalConstrains;
-        }
-
-        double[][] equalitiesLhs = new double[numberOfEqualities][numberOfOriginalVariables + numberOfOriginalConstrains + 1];
-        double[] equalitiesRhs = new double[numberOfEqualities];
+        double[][] equalitiesLhs = new double[numberOfOriginalConstrains][numberOfOriginalVariables + numberOfOriginalConstrains + 1];
+        double[] equalitiesRhs = new double[numberOfOriginalConstrains];
         double[][] inequalitiesLhs = new double[numberOfOriginalConstrains][numberOfOriginalVariables + numberOfOriginalConstrains + 1];
         double[] inequalitiesRhs = new double[numberOfOriginalConstrains];
         double[] objective = new double[numberOfOriginalVariables + numberOfOriginalConstrains + 1];
@@ -77,30 +62,13 @@ public class InteriorPoint {
 
         System.arraycopy(b, 0, equalitiesRhs, 0, numberOfOriginalConstrains);
 
-        if (homogeneous) {
-            equalitiesLhs[numberOfEqualities - 1][numberOfOriginalVariables - 1] = 1.0;
-            equalitiesRhs[numberOfEqualities - 1] = 1.0;
-        }
-
-        // randomization
-        double[] c = new double[numberOfOriginalConstrains];
-
-        if (randomizePoint) {
-            for (int i = 0; i < c.length; i++) {
-                c[i] = 1.0 - this.random.nextDouble();// because c[i] has to be in (0.0, 1.0>
-            }
-        } else {
-            for (int i = 0; i < c.length; i++) {
-                c[i] = 1.0;
-            }
-        }
-
         for (int i = 0; i < numberOfOriginalConstrains; i++) {
             for (int j = 0; j < numberOfOriginalConstrains; j++) {
                 if (i == j) {
-                    inequalitiesLhs[i][numberOfOriginalVariables + j] = -c[j];
+                    inequalitiesLhs[i][numberOfOriginalVariables + j] = -1.0;
                 }
             }
+
             inequalitiesLhs[i][numberOfOriginalConstrains + numberOfOriginalVariables] = 1.0;
         }
 
@@ -120,12 +88,6 @@ public class InteriorPoint {
             throw new InfeasibleSystemException("Cannot find interior point. The original problem is infeasible or degenerated to a point. Slack = " + solverResult.getValue());
         }
 
-        System.arraycopy(solverResult.getSolution(), 0, result, 0, result.length);
-
-        if (homogeneous) {
-            result[result.length - 1] = 1.0;
-        }
-
-        return result;
+        return Arrays.copyOfRange(solverResult.getSolution(), 0, A[0].length);
     }
 }

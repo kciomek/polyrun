@@ -2,13 +2,14 @@ package polyrun.sampling;
 
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomAdaptor;
+import polyrun.constraints.ConstraintsSystem;
 
 import java.util.Random;
 
 /**
  * Grid walk sampler.
  */
-public class GridWalk extends RandomWalk {
+public class GridWalk implements RandomWalk {
 
     private final Random random;
     private final double gridSpacing;
@@ -34,22 +35,20 @@ public class GridWalk extends RandomWalk {
     }
 
     @Override
-    protected void fillDirectionVector(double[] direction, boolean homogeneous) {
-        for (int i = 0; i < direction.length; i++) {
-            direction[i] = 0.0;
-        }
+    public void next(double[][] A, int[][] indicesOfNonZeroElementsInA,
+                     double[] b, double[] buffer,
+                     double[] from, double[] to) {
+        int index = this.random.nextInt(2 * from.length);
 
-        int index = this.random.nextInt(2 * (homogeneous ? direction.length - 1 : direction.length));
+        double[] nextPoint = new double[from.length];
+        System.arraycopy(from, 0, nextPoint, 0, from.length);
+        nextPoint[index / 2] = ((index % 2 == 0) ? 1.0 : -1.0) * this.gridSpacing;
 
-        direction[index / 2] = (index % 2 == 0) ? 1.0 : -1.0;
-    }
-
-    @Override
-    protected double selectStepLength(int dim, double bg, double ed) {
-        if (this.gridSpacing >= ed) {
-            return 0.0;
+        // Set newly generated point as a new if it is inside the polytope and stay otherwise
+        if (ConstraintsSystem.isSatisfied(A, nextPoint, b)) {
+            System.arraycopy(nextPoint, 0, to, 0, from.length);
         } else {
-            return this.gridSpacing;
+            System.arraycopy(from, 0, to, 0, from.length);
         }
     }
 }

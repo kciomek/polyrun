@@ -94,6 +94,7 @@ public class Transformation {
 
     /**
      * Solves equation b - A * this.particularSolution
+     *
      * @param A
      * @param b
      * @return
