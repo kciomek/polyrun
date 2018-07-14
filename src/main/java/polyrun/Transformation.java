@@ -56,7 +56,7 @@ public class Transformation {
      * The aim is to prepare the sampling space to be full-dimensional.
      *
      * @param matrixToTransform Matrix to project
-     * @return
+     * @return projection
      */
     public double[][] project(double[][] matrixToTransform) {
         if (this.nullspace.numRows() != matrixToTransform[0].length) {
@@ -95,9 +95,9 @@ public class Transformation {
     /**
      * Solves equation b - A * this.particularSolution
      *
-     * @param A
-     * @param b
-     * @return
+     * @param A matrix
+     * @param b vector
+     * @return result of b - A * this.particularSolution
      */
     public double[] solveForParticularSolution(double[][] A, double[] b) {
         return new SimpleMatrix(b.length, 1, true, b)

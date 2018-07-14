@@ -1,16 +1,16 @@
 package polyrun.thinning;
 
 /**
- * Represents thinning function in form f(n) = ceil(a * log(n + 1) * n^3), where 'n' is the dimension of sampling space,
- * and 'a' is a parameter (scaling factor).
+ * Represents thinning function in form f(m, n) = ceil(a * log(n + 1) * n^3), where 'n' is the dimension of sampling space,
+ * 'm' is the number of constraints, and 'a' is a parameter (scaling factor).
  */
-public class LogarithmicallyScalableThinningFunction implements ThinningFunction {
+public class LogNNCubedThinningFunction implements ThinningFunction {
     private final double scalingFactor;
 
     /**
      * @param scalingFactor Has to be greater than 0.
      */
-    public LogarithmicallyScalableThinningFunction(double scalingFactor) {
+    public LogNNCubedThinningFunction(double scalingFactor) {
         if (scalingFactor <= 0.0) {
             throw new IllegalArgumentException("Value of 'scalingFactor' cannot be less than or equal to 0.");
         }
@@ -19,12 +19,12 @@ public class LogarithmicallyScalableThinningFunction implements ThinningFunction
     }
 
     @Override
-    public int getThinningFactor(int dimensions) {
+    public int getThinningFactor(int constraints, int dimensions) {
         return (int) Math.ceil(this.scalingFactor * Math.log(dimensions + 1) * Math.pow(dimensions, 3.0));
     }
 
     @Override
     public String toString() {
-        return "LogarithmicallyScalableThinningFunction{" + this.scalingFactor + "}";
+        return "LogNNCubedThinningFunction{" + this.scalingFactor + "}";
     }
 }

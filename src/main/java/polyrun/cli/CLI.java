@@ -2,15 +2,15 @@ package polyrun.cli;
 
 import org.apache.commons.cli.*;
 import polyrun.thinning.ConstantThinningFunction;
-import polyrun.thinning.LinearlyScalableThinningFunction;
-import polyrun.thinning.LogarithmicallyScalableThinningFunction;
+import polyrun.thinning.NCubedThinningFunction;
+import polyrun.thinning.LogNNCubedThinningFunction;
 import polyrun.thinning.ThinningFunction;
 
 import java.util.Random;
 
 class CLI {
     private static final int DEFAULT_NUMBER_OF_SAMPLES = 1000;
-    private static final ThinningFunction DEFAULT_THINNING_FUNCTION = new LinearlyScalableThinningFunction(1.0);
+    private static final ThinningFunction DEFAULT_THINNING_FUNCTION = new NCubedThinningFunction(1.0);
 
     private final CommandLineParser parser;
 
@@ -101,7 +101,7 @@ class CLI {
         }
 
         if (cmd.hasOption("version")) {
-            System.out.println("0.3.1"); // todo: read from resources
+            System.out.println("1.0.0-SNAPSHOT"); // todo: read from resources
             System.exit(0);
         }
 
@@ -132,9 +132,9 @@ class CLI {
             if ("tfc".equals(fields[0])) {
                 this.thinningFunction = new ConstantThinningFunction(Integer.parseInt(fields[1]));
             } else if ("tfl".equals(fields[0])) {
-                this.thinningFunction = new LinearlyScalableThinningFunction(Double.parseDouble(fields[1]));
+                this.thinningFunction = new NCubedThinningFunction(Double.parseDouble(fields[1]));
             } else if ("tfg".equals(fields[0])) {
-                this.thinningFunction = new LogarithmicallyScalableThinningFunction(Double.parseDouble(fields[1]));
+                this.thinningFunction = new LogNNCubedThinningFunction(Double.parseDouble(fields[1]));
             } else {
                 throw new ParseException("Wrong thinning function symbol '" + fields[0] + "'. See -h for help.");
             }

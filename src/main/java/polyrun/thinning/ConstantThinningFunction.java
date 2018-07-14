@@ -1,7 +1,8 @@
 package polyrun.thinning;
 
 /**
- * Represents constant thinning function in form f(n) = c that does not depend on number of dimensions 'n', and 'c' is constant.
+ * Represents constant thinning function in form f(m, n) = c that does not depend on number of dimensions 'n'
+ * or number of constraints 'm', and where 'c' is constant.
  */
 public class ConstantThinningFunction implements ThinningFunction {
     private final int constant;
@@ -18,7 +19,7 @@ public class ConstantThinningFunction implements ThinningFunction {
     }
 
     @Override
-    public int getThinningFactor(int dimensions) {
+    public int getThinningFactor(int constraints, int dimensions) {
         return this.constant;
     }
 

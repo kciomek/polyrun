@@ -131,7 +131,7 @@ public class PolytopeRunner {
             throw new RuntimeException("Start point is not set. Use method setStartPoint() or setAnyStartPoint().");
         }
 
-        final int stepsPerSample = thinningFunction.getThinningFactor(this.A[0].length);
+        final int stepsPerSample = thinningFunction.getThinningFactor(this.A.length, this.A[0].length);
 
         for (int i = 0; i < numberOfSamples; i++) {
             for (int j = 0; j < stepsPerSample; j++) {

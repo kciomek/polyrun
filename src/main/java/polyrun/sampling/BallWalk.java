@@ -89,7 +89,7 @@ public class BallWalk implements RandomWalk {
     /**
      * @param r radius
      * @param n number of dimensions
-     * @return
+     * @return length of the step
      */
     protected double getStepLength(double r, int n) {
         return Math.pow(random.nextDouble(), 1.0 / (double) n) * r;
@@ -106,7 +106,7 @@ public class BallWalk implements RandomWalk {
      * @param b vector
      * @param d direction
      * @param x current point (vector)
-     * @return
+     * @return distance to the boundary of the polytope from given point
      */
     private double distanceToBoundary(double[][] A, double[] b, double[] d, double[] x) {
         double result = Double.NaN;

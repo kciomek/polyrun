@@ -203,12 +203,12 @@ public class ConstraintsSystem {
     }
 
     /**
-     * Checks if x satisfy system of inequalities: Ax <= b.
+     * Checks if x satisfy system of inequalities: Ax &le; b.
      *
      * @param A matrix
      * @param x vector
      * @param b vector
-     * @return
+     * @return whether Ax &le; b is satisfied
      */
     public static boolean isSatisfied(double[][] A, double[] x, double[] b) {
         for (int i = 0; i < A.length; i++) {
