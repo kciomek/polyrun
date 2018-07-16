@@ -48,7 +48,7 @@ public class HitAndRun implements RandomWalk {
                      double[] b, double[] buffer,
                      double[] from, double[] to) {
 
-        // Generate direction
+        // Generate random direction (pick a random point from unit hypersphere)
         this.unitNSphere.fillVectorWithRandomPoint(buffer);
 
         // Calculate begin and end of the segment along the generated direction
@@ -141,6 +141,7 @@ public class HitAndRun implements RandomWalk {
         // Select a step size
         double stepLength = (bg + (ed - bg) * this.random.nextDouble());
 
+        // Set destination
         for (int i = 0; i < A[0].length; i++) {
             to[i] = buffer[i] * stepLength + from[i];
         }

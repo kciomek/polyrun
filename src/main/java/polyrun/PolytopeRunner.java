@@ -38,7 +38,6 @@ import java.util.List;
  */
 public class PolytopeRunner {
 
-    private final ConstraintsSystem constraintsSystem;
     private final Transformation transformation;
     private double[][] A;
     private final int[][] nonZeroElementsInA;
@@ -73,16 +72,18 @@ public class PolytopeRunner {
      *                          elements or directly over entire transformed matrix A (from {@code constraintsSystem})
      */
     public PolytopeRunner(ConstraintsSystem constraintsSystem, GLPSolver glpSolver, boolean skipZeroElements) {
-        this.constraintsSystem = constraintsSystem;
         this.transformation = new Transformation(constraintsSystem.getC(), constraintsSystem.getD(), constraintsSystem.getNumberOfVariables());
 
+        // Project constraints to space where the polytope will be full-dimensional
         double[][] transformedA = transformation.project(constraintsSystem.getA());
         double[] transformedB = transformation.solveForParticularSolution(constraintsSystem.getA(), constraintsSystem.getB());
 
         if (glpSolver != null) {
+            // If glpSolver is provided then removing redundant constraints is required
             List<Integer> redundantConstraints = new ArrayList<Integer>();
 
             for (int i = 0; i < transformedA.length; i++) {
+                // Check if i-th constraint is redundant
                 double[] reducedB = new double[transformedA.length];
                 System.arraycopy(transformedB, 0, reducedB, 0, transformedB.length);
                 reducedB[i] += 1;
@@ -116,10 +117,12 @@ public class PolytopeRunner {
                 }
             }
         } else {
+            // Removing redundant constraints were not required
             this.A = transformedA;
             this.b = transformedB;
         }
 
+        // Building matrix of non zero elements to allow RandomWalks not to iterate over the entire matrix A
         if (skipZeroElements) {
             this.nonZeroElementsInA = new int[A.length][];
 
@@ -143,6 +146,7 @@ public class PolytopeRunner {
             this.nonZeroElementsInA = null;
         }
 
+        // Prepare buffer
         this.buffer = new double[this.A[0].length];
     }
 
@@ -271,7 +275,7 @@ public class PolytopeRunner {
      * @throws IllegalArgumentException if a startPoint is not an interior point of the polytope
      */
     public void setStartPoint(double[] startPoint) {
-        if (startPoint.length != this.constraintsSystem.getA()[0].length) {
+        if (startPoint.length != this.A[0].length) {
             throw new IllegalArgumentException("Length of start point has to be equal to the number of columns in constraints system.");
         }
 

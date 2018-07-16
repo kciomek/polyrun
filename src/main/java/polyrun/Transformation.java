@@ -40,7 +40,10 @@ public class Transformation {
      */
     public Transformation(double matrixC[][], double[] vectord, int numberOfVariables) {
         if (matrixC == null || matrixC.length == 0) {
+            // Set identity matrix as new basis
             this.nullspace = SimpleMatrix.identity(numberOfVariables);
+
+            // Set vector of zeros as particular solution
             this.particularSolution = new SimpleMatrix(numberOfVariables, 1);
         } else {
             Matrix C = new DMatrixRMaj(matrixC);
@@ -48,11 +51,12 @@ public class Transformation {
             SimpleSVD<SimpleMatrix> svd = new SimpleSVD<SimpleMatrix>(C, false);
 
             if (svd.nullity() == 0) {
+                // There is no space to sample
                 throw new RuntimeException("The system of equations has only one solution.");
             }
 
+            // Calculate matrix with inverted singular values on the diagonal
             SimpleMatrix W = svd.getW();
-
             double[][] values = new double[C.getNumCols()][C.getNumRows()];
 
             for (int i = 0; i < C.getNumCols(); i++) {
@@ -65,7 +69,10 @@ public class Transformation {
                 }
             }
 
+            // Set null space of Cx = b as new basis
             this.nullspace = svd.nullSpace();
+
+            // Set particular solution, which with the null space describes all solutions of Cx=d
             this.particularSolution = svd.getV().mult(new SimpleMatrix(values)).mult(svd.getU()).mult(d);
         }
     }

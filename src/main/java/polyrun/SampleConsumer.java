@@ -24,5 +24,11 @@ package polyrun;
  * Consumer for samples generated with {@link PolytopeRunner#neighborhood} or {@link PolytopeRunner#chain}.
  */
 public interface SampleConsumer {
+
+    /**
+     * Consumes samples
+     *
+     * @param sample sample to consume
+     */
     void consume(double[] sample);
 }

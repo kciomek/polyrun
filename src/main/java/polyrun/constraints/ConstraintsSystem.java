@@ -75,6 +75,7 @@ public class ConstraintsSystem {
                 System.arraycopy(lhs, 0, a, 0, numberOfVariables);
                 b = rhs;
             } else if (dir.equals(">=")) {
+                // Switch direction to <=
                 for (int j = 0; j < numberOfVariables; j++) {
                     a[j] = -lhs[j];
                 }
@@ -142,6 +143,7 @@ public class ConstraintsSystem {
                 System.arraycopy(lhs[i], 0, a, 0, this.numberOfVariables);
                 b = rhs[i];
             } else if (dir[i].equals(">=")) {
+                // Switch direction to <=
                 for (int j = 0; j < this.numberOfVariables; j++) {
                     a[j] = -lhs[i][j];
                 }

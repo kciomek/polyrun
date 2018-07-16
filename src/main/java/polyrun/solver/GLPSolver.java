@@ -32,5 +32,15 @@ public interface GLPSolver {
         Minimize
     }
 
+    /**
+     * Solve General Linear Programing Problem (variables are allowed to be negative) by optimizing the 'objective' function
+     * under given 'constraints'.
+     *
+     * @param direction   optimization direction
+     * @param objective   coefficients of the objective function
+     * @param constraints constraints
+     * @return the result of optimization
+     * @throws UnboundedSystemException when constraint system is unbounded and solution cannot be found
+     */
     SolverResult solve(Direction direction, double[] objective, ConstraintsSystem constraints) throws UnboundedSystemException;
 }

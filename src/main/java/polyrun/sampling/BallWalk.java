@@ -73,7 +73,10 @@ public class BallWalk implements RandomWalk {
     public void next(double[][] A, int[][] indicesOfNonZeroElementsInA,
                      double[] b, double[] buffer,
                      double[] from, double[] to) {
+        // Pick random direction by getting random point from hypersphere-sphere
         this.unitNSphere.fillVectorWithRandomPoint(buffer);
+
+        // Pick length of a step
         final double step = getStepLength(this.radius, from.length);
 
         if (OutOfBoundsBehaviour.Stay.equals(this.outOfBoundsBehaviour)) {
@@ -89,6 +92,7 @@ public class BallWalk implements RandomWalk {
                 System.arraycopy(from, 0, to, 0, from.length);
             }
         } else if (OutOfBoundsBehaviour.Crop.equals(this.outOfBoundsBehaviour)) {
+            // Calculate distance from point 'from' to the boundary of the polytope defined by Ax <= b in direction stored in 'buffer'
             double distance = distanceToBoundary(A, b, buffer, from);
 
             if (Double.isNaN(distance)) {
@@ -149,7 +153,7 @@ public class BallWalk implements RandomWalk {
         }
 
         if (result < 0.0 && result > 1e-10) {
-            // taking care about inaccuracy
+            // Take care about inaccuracy
             result = 0.0;
         }
 

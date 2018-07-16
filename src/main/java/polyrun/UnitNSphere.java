@@ -37,12 +37,10 @@ public class UnitNSphere {
     }
 
     /**
-     * Simple method of picking random point from unit n-sphere. It fills the vector (double[]) passed as first argument.
-     * If the vector is provided in homogeneous coordinates, zero will be assigned to the last element, and
-     * first elements will be filled with random point of unit n-sphere.
+     * Simple method of picking random point from unit hyper-sphere. It fills the vector (double[]) passed in parameter.
      * <p>
-     * To get random point of unit n-sphere in Cartesian coordinates input vector has to be the length of n+1,
-     * and in homogeneous coordinates coordinates vector has to be the length of n+2.
+     * The method generates n random values from normal distribution of mean = 0 and standard deviation = 1
+     * and normalize them by square root of sum of their squares.
      *
      * @param vectorToFill vector to fill
      */

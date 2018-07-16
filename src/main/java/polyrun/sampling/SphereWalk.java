@@ -50,6 +50,7 @@ public class SphereWalk extends BallWalk {
 
     @Override
     protected double getStepLength(double r, int n) {
+        // Just return the radius r
         return r;
     }
 }
