@@ -29,14 +29,14 @@ import polyrun.exceptions.UnboundedSystemException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class CommonMathGLPSolverWrapper implements GLPSolver {
+public class CommonsMathGLPSolverWrapper implements GLPSolver {
     private final SimplexSolver solver;
 
-    public CommonMathGLPSolverWrapper(SimplexSolver solver) {
+    public CommonsMathGLPSolverWrapper(SimplexSolver solver) {
         this.solver = solver;
     }
 
-    public CommonMathGLPSolverWrapper() {
+    public CommonsMathGLPSolverWrapper() {
         this.solver = new SimplexSolver();
     }
 

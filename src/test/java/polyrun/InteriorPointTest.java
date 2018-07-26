@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import polyrun.exceptions.InfeasibleSystemException;
 import polyrun.exceptions.UnboundedSystemException;
-import polyrun.solver.CommonMathGLPSolverWrapper;
+import polyrun.solver.CommonsMathGLPSolverWrapper;
 
 public class InteriorPointTest {
     private static final double accuracy = 1e-9;
@@ -18,7 +18,7 @@ public class InteriorPointTest {
                 {0, -1}};
         final double[] b = new double[]{1, 1, 0, 0};
 
-        double[] generatedPoint = new InteriorPoint().generate(A, b, new CommonMathGLPSolverWrapper());
+        double[] generatedPoint = new InteriorPoint().generate(A, b, new CommonsMathGLPSolverWrapper());
 
         Assert.assertEquals(A[0].length, generatedPoint.length);
         Assert.assertEquals(0.5, generatedPoint[0], accuracy);
@@ -34,7 +34,7 @@ public class InteriorPointTest {
                 {0, -1}};
         final double[] b = new double[]{1, 4, 10, -2};
 
-        double[] generatedPoint = new InteriorPoint().generate(A, b, new CommonMathGLPSolverWrapper());
+        double[] generatedPoint = new InteriorPoint().generate(A, b, new CommonsMathGLPSolverWrapper());
 
         Assert.assertEquals(A[0].length, generatedPoint.length);
         Assert.assertEquals(0.0, generatedPoint[0], accuracy);
@@ -49,7 +49,7 @@ public class InteriorPointTest {
                 {-1, 0, 1}};
         final double[] b = new double[]{1, 1, 0};
 
-        new InteriorPoint().generate(A, b, new CommonMathGLPSolverWrapper());
+        new InteriorPoint().generate(A, b, new CommonsMathGLPSolverWrapper());
     }
 
     @Test(expected = InfeasibleSystemException.class)
@@ -61,6 +61,6 @@ public class InteriorPointTest {
                 {1, 0}};
         final double[] b = new double[]{1, 1, 0, -1};
 
-        new InteriorPoint().generate(A, b, new CommonMathGLPSolverWrapper());
+        new InteriorPoint().generate(A, b, new CommonsMathGLPSolverWrapper());
     }
 }

@@ -24,7 +24,7 @@ import polyrun.constraints.ConstraintsSystem;
 import polyrun.exceptions.InfeasibleSystemException;
 import polyrun.exceptions.UnboundedSystemException;
 import polyrun.sampling.RandomWalk;
-import polyrun.solver.CommonMathGLPSolverWrapper;
+import polyrun.solver.CommonsMathGLPSolverWrapper;
 import polyrun.solver.GLPSolver;
 import polyrun.solver.SolverResult;
 import polyrun.thinning.NoThinning;
@@ -43,6 +43,7 @@ public class PolytopeRunner {
     private final int[][] nonZeroElementsInA;
     private final double[] b;
     private final double[] buffer;
+    private final int numberOfOriginalVariables;
 
     private double[] startPoint;
 
@@ -50,7 +51,7 @@ public class PolytopeRunner {
      * @param constraintsSystem system of constraints
      */
     public PolytopeRunner(ConstraintsSystem constraintsSystem) {
-        this(constraintsSystem, new CommonMathGLPSolverWrapper(), true);
+        this(constraintsSystem, new CommonsMathGLPSolverWrapper(), true);
     }
 
     /**
@@ -61,7 +62,7 @@ public class PolytopeRunner {
      *                                   elements or directly over entire transformed matrix A (from {@code constraintsSystem})
      */
     public PolytopeRunner(ConstraintsSystem constraintsSystem, boolean removeRedundantConstraints, boolean skipZeroElements) {
-        this(constraintsSystem, removeRedundantConstraints ? new CommonMathGLPSolverWrapper() : null, skipZeroElements);
+        this(constraintsSystem, removeRedundantConstraints ? new CommonsMathGLPSolverWrapper() : null, skipZeroElements);
     }
 
     /**
@@ -73,6 +74,7 @@ public class PolytopeRunner {
      */
     public PolytopeRunner(ConstraintsSystem constraintsSystem, GLPSolver glpSolver, boolean skipZeroElements) {
         this.transformation = new Transformation(constraintsSystem.getC(), constraintsSystem.getD(), constraintsSystem.getNumberOfVariables());
+        this.numberOfOriginalVariables = constraintsSystem.getA()[0].length;
 
         // Project constraints to space where the polytope will be full-dimensional
         double[][] transformedA = transformation.project(constraintsSystem.getA());
@@ -249,14 +251,14 @@ public class PolytopeRunner {
      *                                   (in such a case polytope cannot be sampled)
      */
     public void setAnyStartPoint() throws UnboundedSystemException, InfeasibleSystemException {
-        this.setAnyStartPoint(new CommonMathGLPSolverWrapper());
+        this.setAnyStartPoint(new CommonsMathGLPSolverWrapper());
     }
 
     /**
      * Sets start point for methods {@code chain} and {@code neighborhood}. Set point is calculated by slack
      * maximization between edges.
      *
-     * @param glpSolver solver for General Linear Programing problem (e.g., {@link CommonMathGLPSolverWrapper})
+     * @param glpSolver solver for General Linear Programing problem (e.g., {@link CommonsMathGLPSolverWrapper})
      * @throws UnboundedSystemException  if a polytope is tried to be build on top of unbounded system of constraints
      *                                   (in such a case polytope cannot be sampled)
      * @throws InfeasibleSystemException if a polytope is tried to be build on top of infeasible system of constraints
@@ -275,7 +277,7 @@ public class PolytopeRunner {
      * @throws IllegalArgumentException if a startPoint is not an interior point of the polytope
      */
     public void setStartPoint(double[] startPoint) {
-        if (startPoint.length != this.A[0].length) {
+        if (startPoint.length != this.numberOfOriginalVariables) {
             throw new IllegalArgumentException("Length of start point has to be equal to the number of columns in constraints system.");
         }
 

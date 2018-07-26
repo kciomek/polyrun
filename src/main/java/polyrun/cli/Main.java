@@ -27,7 +27,7 @@ import polyrun.SampleConsumer;
 import polyrun.constraints.Constraint;
 import polyrun.constraints.ConstraintsSystem;
 import polyrun.sampling.HitAndRun;
-import polyrun.solver.CommonMathGLPSolverWrapper;
+import polyrun.solver.CommonsMathGLPSolverWrapper;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -58,7 +58,7 @@ class Main {
 
             // Sample
             PolytopeRunner polytopeRunner = new PolytopeRunner(constraintsSystem);
-            polytopeRunner.setAnyStartPoint(new CommonMathGLPSolverWrapper());
+            polytopeRunner.setAnyStartPoint(new CommonsMathGLPSolverWrapper());
             polytopeRunner.chain(new HitAndRun(new RandomAdaptor(new MersenneTwister(cli.getSeed()))),
                     cli.getThinningFunction(),
                     cli.getNumberOfSamples(),
