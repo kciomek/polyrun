@@ -218,7 +218,7 @@ Operations Research, 1984, 32:1296–1308. [click to visit](http://www.jstor.org
 [3] M. Dyer, A. Frieze, R. Kannan, _A random polynomial-time algorithm for approximating the volume of convex bodies_, J. ACM, 
 1991, 38:1-17. [click to visit](https://dx.doi.org/10.1145/102782.102783)
 
-[4] API documentation. [click to visit](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun)
+[4] API documentation. [click to visit](https://kciomek.github.io/polyrun/docs/1.0.0/api)
 
 ## Issues
 
