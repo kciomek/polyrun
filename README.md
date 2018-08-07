@@ -108,7 +108,7 @@ double[][] neighborhood = runner.neighborhood(new ShereWalk(0.15, OutOfBoundsBeh
 
 If the generated samples would be outside the polytope, the algorithm crops them to the boundary.
 
-![Example](doc/example-shpere-walk.png?raw=true)
+![Example](doc/example-sphere-walk.png?raw=true)
 
 Instead of allocating the memory for an array of complete results of the sampling algorithm,
 both _chain_ and _neighborhood_ methods can consume the samples already during
