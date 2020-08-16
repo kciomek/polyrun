@@ -1,6 +1,8 @@
-# polyrun
+# Polyrun
 
-_Polyrun_ contains an implementation of Hit-and-Run algorithm (HAR) for uniform sampling from bounded convex polytopes defined by linear constraints.
+_Polyrun_ contains an implementation of Hit-and-Run algorithm (HAR) for uniform sampling from bounded convex polytopes
+defined by linear constraints, as well as three other sampling methods: BallWalk [2], SphereWalk, and GridWalk [3],
+exploiting a neighborhood of some interior point within the convex polytope.
 It is written in Java.
 
 ## Table of contents
@@ -73,7 +75,7 @@ that allows for controlling the transformation settings.
 
 Third, a starting point for the sampling algorithms needs to be set up.
 One may either provide a custom starting point with the _setStartPoint_ method
-or use some build-in method for selecting such a~point automatically in the following way:
+or use some built-in method for selecting such a~point automatically in the following way:
 ```java
 runner.setAnyStartPoint(); // sets a point that is a result of slack maximization
 ```
@@ -130,14 +132,16 @@ runner.chain(new HitAndRun(),
 
 Both _chain_ and _neighborhood_ methods can be called with any
 _[RandomWalk](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/sampling/RandomWalk.html)_
-depending on the application. The library contains three sampling methods:
-_[HitAndRun](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/sampling/HitAndRun.html)_[1],
-_[BallWalk](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/sampling/BallWalk.html)_[2],
-and _[GridWalk](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/sampling/GridWalk.html)_[3].
-All of them accept custom random number generators in their constructors, what allows for performing the experiments
-whose results are reproducible.
+depending on the application. All sampling algorithms accept custom random number generators in their constructors,
+what allows for performing the experiments whose results are reproducible.
+
+
+This and other examples can be found [here](https://github.com/kciomek/polyrun-examples).
+ 
+
 
 For a more detailed description of the library, refer to the [API documentation](http://kciomek.github.io/polyrun/docs/1.0.0/api).
+
 
 ### Extension points
 
@@ -148,7 +152,7 @@ _[PolytopeRunner](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/Polyt
 for slack maximization and removing redundant constraints. It can be done by implementing
 _[GLPSolver](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/solver/GLPSolver.html)_.
 Finally, the library provides interface
-_[RandomWalk](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/sampling/RandomWalk.html)_
+_[RandomWalk](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/sampling/RandomWalk.html)_.
 By extending it, the user can control random walk inside the polytope what results in custom sampling algorithm.
 
 ![Example](doc/library.png?raw=true)
@@ -220,6 +224,9 @@ Operations Research, 1984, 32:1296–1308. [click to visit](http://www.jstor.org
 
 [4] API documentation. [click to visit](https://kciomek.github.io/polyrun/docs/1.0.0/api)
 
+[5] Code examples. [click to visit](https://github.com/kciomek/polyrun-examples)
+
+
 ## Issues
 
 Go to [issue tracking system](https://github.com/kciomek/polyrun/issues).
@@ -228,7 +235,7 @@ Go to [issue tracking system](https://github.com/kciomek/polyrun/issues).
 
 The MIT License (MIT)
 
-Copyright (c) 2015-2018 Krzysztof Ciomek
+Copyright (c) 2015-2020 Krzysztof Ciomek
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
