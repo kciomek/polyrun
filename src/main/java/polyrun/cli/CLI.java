@@ -26,9 +26,13 @@ import polyrun.thinning.NCubedThinningFunction;
 import polyrun.thinning.LogNNCubedThinningFunction;
 import polyrun.thinning.ThinningFunction;
 
+import java.io.IOException;
+import java.util.Properties;
 import java.util.Random;
 
 class CLI {
+    private static final String PROPERTIES_FILE = "application.properties";
+    private static final String VERSION_PROPERTY = "version";
     private static final int DEFAULT_NUMBER_OF_SAMPLES = 1000;
     private static final ThinningFunction DEFAULT_THINNING_FUNCTION = new NCubedThinningFunction(1.0);
 
@@ -111,7 +115,7 @@ class CLI {
         return options;
     }
 
-    public void parse(String args[]) throws ParseException {
+    void parse(String args[]) throws ParseException {
         CommandLine cmd = parser.parse(this.generateOptions(), args);
 
         if (cmd.hasOption("h")) {
@@ -121,7 +125,7 @@ class CLI {
         }
 
         if (cmd.hasOption("version")) {
-            System.out.println("1.0.0-SNAPSHOT"); // todo: read from resources
+            System.out.println(getVersion());
             System.exit(0);
         }
 
@@ -187,5 +191,17 @@ class CLI {
 
     public ThinningFunction getThinningFunction() {
         return thinningFunction;
+    }
+
+    private static String getVersion() {
+        Properties prop = new Properties();
+        try {
+            prop.load(CLI.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE));
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        return prop.getProperty(VERSION_PROPERTY);
     }
 }
