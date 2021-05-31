@@ -99,7 +99,7 @@ public class PolytopeRunner {
                         throw new RuntimeException("Infeasible system.");
                     }
 
-                    if (solverResult.getValue() < transformedB[i]) {
+                    if (solverResult.getValue() - transformedB[i] < -1e-10) {
                         redundantConstraints.add(i);
                     }
                 } catch (UnboundedSystemException e) {
