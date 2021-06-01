@@ -58,7 +58,7 @@ public class GridWalk implements RandomWalk {
     public void next(double[][] A, int[][] indicesOfNonZeroElementsInA,
                      double[] b, double[] buffer,
                      double[] from, double[] to) {
-        // Pick random direction parallel to on of the axes:
+        // Pick random direction parallel to one of the axes:
         // index / 2 - the index of axis
         // index % 2 - the direction (0 - up, 1 - down)
         int index = this.random.nextInt(2 * from.length);

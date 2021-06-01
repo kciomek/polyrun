@@ -37,7 +37,7 @@ public class UnitNSphere {
     }
 
     /**
-     * Simple method of picking random point from unit hyper-sphere. It fills the vector (double[]) passed in parameter.
+     * Simple method of picking random point from unit hyper-sphere. It fills the vector (double[]) passed as a parameter.
      * <p>
      * The method generates n random values from normal distribution of mean = 0 and standard deviation = 1
      * and normalize them by square root of sum of their squares.

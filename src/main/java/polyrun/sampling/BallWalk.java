@@ -121,7 +121,7 @@ public class BallWalk implements RandomWalk {
 
     /**
      * Calculates distance from point x to the boundary of the polytope defined by Ax <= b
-     * in the given direction.
+     * in the given direction d.
      * <p>
      * The method calculates the minimum value of (b-Ax)_i/((Ad)_i) over all i such that 0 &lt; i &lt; m and (Ad)_i &gt; 0,
      * where m is the number of inequalities (rows in matrix A) and (v)_i is the i-th element of vector v.
@@ -152,7 +152,7 @@ public class BallWalk implements RandomWalk {
             }
         }
 
-        if (result < 0.0 && result > 1e-10) {
+        if (result < 0.0 && result > 1e-10) { // fixme
             // Take care about inaccuracy
             result = 0.0;
         }

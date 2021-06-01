@@ -29,7 +29,7 @@ public interface ThinningFunction {
     /**
      * Returns thinning factor for given number of dimensions.
      *
-     * @param dimensions number of constraints that defines sampling space
+     * @param constraints number of constraints that defines sampling space
      * @param dimensions number of dimensions of sampling space
      * @return thinning factor
      */
