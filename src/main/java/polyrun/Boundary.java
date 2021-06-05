@@ -4,7 +4,7 @@ package polyrun;
 public class Boundary {
 
     /**
-     * Calculates distance from point x to a boundary of a polytope defined by Ax <= b
+     * Calculates distance from point x to a boundary of a polytope defined by Ax ≤ b
      * in directions d and -d.
      * <p>
      * The method calculates the minimum value (for direction d, and maximum for -d) of (b-Ax)_i/((Ad)_i) over
@@ -16,7 +16,7 @@ public class Boundary {
      * @param d   direction
      * @param x   current point (vector)
      * @param eps absolute error to allow (non-negative), i.e., the greatest value treated as 0;
-     *            applied also to check Ax<=b
+     *            applied also to check Ax ≤ b
      * @return two element array with distances to the boundary of the polytope from given point x;
      *         the first value is non-negative and represents distance in direction d,
      *         and the second is non-positive and represents distance backwards (direction -d)

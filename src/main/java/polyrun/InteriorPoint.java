@@ -41,7 +41,7 @@ public class InteriorPoint {
     }
 
     /**
-     * Finds interior point (Chebyshev center) of Ax &le; b. Note that the system is required to be full-dimensional.
+     * Finds an interior point of Ax &le; b by maximization of a slack variable. Note that the system is required to be bounded and full-dimensional.
      *
      * @param A      matrix A
      * @param b      vector b
