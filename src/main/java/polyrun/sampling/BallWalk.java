@@ -23,6 +23,7 @@ package polyrun.sampling;
 
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomAdaptor;
+import polyrun.Boundary;
 import polyrun.UnitNSphere;
 import polyrun.constraints.ConstraintsSystem;
 
@@ -37,6 +38,7 @@ public class BallWalk implements RandomWalk {
     private final double radius;
     private final OutOfBoundsBehaviour outOfBoundsBehaviour;
     private final Random random;
+    private final Boundary boundary;
 
     /**
      * @param radius radius of a ball
@@ -67,6 +69,7 @@ public class BallWalk implements RandomWalk {
         this.radius = radius;
         this.outOfBoundsBehaviour = outOfBoundsBehaviour;
         this.random = random;
+        this.boundary = new Boundary();
     }
 
     @Override
@@ -93,10 +96,10 @@ public class BallWalk implements RandomWalk {
             }
         } else if (OutOfBoundsBehaviour.Crop.equals(this.outOfBoundsBehaviour)) {
             // Calculate distance from point 'from' to the boundary of the polytope defined by Ax <= b in direction stored in 'buffer'
-            double distance = distanceToBoundary(A, b, buffer, from);
+            double distance = boundary.distance(A, b, buffer, from, 1e-10, null)[0];
 
-            if (Double.isNaN(distance)) {
-                throw new RuntimeException("The region is unbounded or point 'from' is out of bounds.");
+            if (distance == Double.POSITIVE_INFINITY) {
+                throw new RuntimeException("The sampling region is unbounded.");
             }
 
             double[] nextPoint = new double[from.length];
@@ -117,46 +120,5 @@ public class BallWalk implements RandomWalk {
      */
     protected double getStepLength(double r, int n) {
         return Math.pow(random.nextDouble(), 1.0 / (double) n) * r;
-    }
-
-    /**
-     * Calculates distance from point x to the boundary of the polytope defined by Ax <= b
-     * in the given direction d.
-     * <p>
-     * The method calculates the minimum value of (b-Ax)_i/((Ad)_i) over all i such that 0 &lt; i &lt; m and (Ad)_i &gt; 0,
-     * where m is the number of inequalities (rows in matrix A) and (v)_i is the i-th element of vector v.
-     *
-     * @param A matrix
-     * @param b vector
-     * @param d direction
-     * @param x current point (vector)
-     * @return distance to the boundary of the polytope from given point
-     */
-    private double distanceToBoundary(double[][] A, double[] b, double[] d, double[] x) {
-        double result = Double.NaN;
-
-        for (int j = 0; j < b.length; j++) {
-            double ad = 0.0;
-            double bax = b[j];
-
-            for (int i = 0; i < A[0].length; i++) {
-                ad += A[j][i] * d[i];
-                bax -= A[j][i] * x[i];
-            }
-
-            if (ad > 0.0) {
-                double nV = bax / ad;
-                if (Double.isNaN(result) || result > nV) {
-                    result = nV;
-                }
-            }
-        }
-
-        if (result < 0.0 && result > 1e-10) { // fixme
-            // Take care about inaccuracy
-            result = 0.0;
-        }
-
-        return result;
     }
 }
