@@ -17,11 +17,15 @@ public class Boundary {
      * @param x   current point (vector)
      * @param eps absolute error to allow (non-negative), i.e., the greatest value treated as 0;
      *            applied also to check Ax ≤ b
+     * @param indicesOfNonZeroElementsInA array of array of indices of non-zero elements in A (if not provided
+     *            the method will iterate over all elements in each row of A; use only if A is relatively sparse)
      * @return two element array with distances to the boundary of the polytope from given point x;
      *         the first value is non-negative and represents distance in direction d,
      *         and the second is non-positive and represents distance backwards (direction -d)
      */
-    public static double[] distance(double[][] A, double[] b, double[] d, double[] x, double eps) {
+    public final double[] distance(double[][] A, double[] b, double[] d, double[] x, double eps, int[][] indicesOfNonZeroElementsInA) {
+        final boolean iterateOverSelectedIndices = indicesOfNonZeroElementsInA != null;
+
         double[] result = new double[2];
         result[0] = Double.POSITIVE_INFINITY;
         result[1] = Double.NEGATIVE_INFINITY;
@@ -30,9 +34,16 @@ public class Boundary {
             double ad = 0.0;
             double bax = b[j];
 
-            for (int i = 0; i < A[0].length; i++) {
-                ad += A[j][i] * d[i];
-                bax -= A[j][i] * x[i];
+            if(iterateOverSelectedIndices) {
+                for (int i : indicesOfNonZeroElementsInA[j]) {
+                    ad += A[j][i] * d[i];
+                    bax -= A[j][i] * x[i];
+                }
+            } else {
+                for (int i = 0; i < A[0].length; i++) {
+                    ad += A[j][i] * d[i];
+                    bax -= A[j][i] * x[i];
+                }
             }
 
             if (-eps <= bax && bax <= eps) {

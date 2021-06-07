@@ -231,7 +231,7 @@ public class BoundaryTest {
             thrown.expect(expectedException);
         }
 
-        double[] distance = Boundary.distance(A, b, d, x, epsilon);
+        double[] distance = new Boundary().distance(A, b, d, x, epsilon, null);
         Assert.assertArrayEquals(expectedResult, distance, ASSERT_EPS);
     }
 }
