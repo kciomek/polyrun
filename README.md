@@ -3,15 +3,14 @@
 _Polyrun_ contains an implementation of Hit-and-Run algorithm (HAR) for uniform sampling from bounded convex polytopes
 defined by linear constraints, as well as three other sampling methods: BallWalk [2], SphereWalk, and GridWalk [3],
 exploiting a neighborhood of some interior point within the convex polytope.
-It is written in Java.
+It is written in Java and described in [this paper](https://doi.org/10.1016/j.softx.2021.100659).
 
 ## Table of contents
 
-- [Tutorial](#tutorial)
 - [Application Programming Interface](#application-programming-interface)
 - [Command Line Interface](#command-line-interface)
 - [References](#references)
-- [Issues](#issues)
+- [Citation](#citation)
 - [License](#license)
 
 ## Application Programming Interface
@@ -75,7 +74,7 @@ that allows for controlling the transformation settings.
 
 Third, a starting point for the sampling algorithms needs to be set up.
 One may either provide a custom starting point with the _setStartPoint_ method
-or use some built-in method for selecting such a~point automatically in the following way:
+or use some built-in method for selecting such a point automatically in the following way:
 ```java
 runner.setAnyStartPoint(); // sets a point that is a result of slack maximization
 ```
@@ -226,16 +225,25 @@ Operations Research, 1984, 32:1296–1308. [click to visit](http://www.jstor.org
 
 [5] Code examples. [click to visit](https://github.com/kciomek/polyrun-examples)
 
+## Citation
 
-## Issues
+If you find _polyrun_ useful in your research, please consider citing:
 
-Go to [issue tracking system](https://github.com/kciomek/polyrun/issues).
+    @article{Ployrun2021,
+        title = {Polyrun: A Java library for sampling from the bounded convex polytopes},
+        author = {Krzysztof Ciomek and Miłosz Kadziński},
+        journal = {SoftwareX},
+        volume = {13},
+        pages = {100659},
+        year = {2021},
+        doi = {https://doi.org/10.1016/j.softx.2021.100659}
+    }
 
 ## License
 
 The MIT License (MIT)
 
-Copyright (c) 2015-2020 Krzysztof Ciomek
+Copyright (c) 2015-2021 Krzysztof Ciomek
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
