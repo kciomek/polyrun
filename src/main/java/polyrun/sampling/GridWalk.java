@@ -68,7 +68,7 @@ public class GridWalk implements RandomWalk {
         nextPoint[index / 2] = ((index % 2 == 0) ? 1.0 : -1.0) * this.gridSpacing;
 
         // Set newly generated point as a new if it is inside the polytope and stay otherwise
-        if (ConstraintsSystem.isSatisfied(A, nextPoint, b)) {
+        if (ConstraintsSystem.isSatisfied(A, nextPoint, b, 1e-10)) {
             System.arraycopy(nextPoint, 0, to, 0, from.length);
         } else {
             System.arraycopy(from, 0, to, 0, from.length);

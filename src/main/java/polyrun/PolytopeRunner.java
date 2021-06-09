@@ -283,7 +283,7 @@ public class PolytopeRunner {
 
         double[] transformedPoint = this.transformation.project(new double[][]{startPoint})[0];
 
-        if (!ConstraintsSystem.isSatisfied(A, transformedPoint, b)) {
+        if (!ConstraintsSystem.isSatisfied(A, transformedPoint, b, 1e-10)) {
             throw new IllegalArgumentException("Interior point is required.");
         }
 

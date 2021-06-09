@@ -231,8 +231,23 @@ public class ConstraintsSystem {
      * @param x vector
      * @param b vector
      * @return whether Ax &le; b is satisfied
+     *
+     * @deprecated Will be removed with 2.x release
      */
     public static boolean isSatisfied(double[][] A, double[] x, double[] b) {
+        return isSatisfied(A, x, b, 0.0d);
+    }
+
+    /**
+     * Checks if x satisfy system of inequalities: Ax &le; b.
+     *
+     * @param A matrix
+     * @param x vector
+     * @param b vector
+     * @param eps absolute error to allow (non-negative), i.e., the greatest value treated as 0
+     * @return whether Ax &le; b is satisfied
+     */
+    public static boolean isSatisfied(double[][] A, double[] x, double[] b, double eps) {
         for (int i = 0; i < A.length; i++) {
             double ax = 0.0;
 
@@ -240,7 +255,7 @@ public class ConstraintsSystem {
                 ax += A[i][j] * x[j];
             }
 
-            if (ax > b[i]) {
+            if (ax - b[i] > eps) {
                 return false;
             }
         }
