@@ -39,6 +39,7 @@ import java.util.List;
 public class PolytopeRunner {
 
     private final Transformation transformation;
+    private final double eps;
     private double[][] A;
     private final int[][] nonZeroElementsInA;
     private final double[] b;
@@ -73,6 +74,18 @@ public class PolytopeRunner {
      *                          elements or directly over entire transformed matrix A (from {@code constraintsSystem})
      */
     public PolytopeRunner(ConstraintsSystem constraintsSystem, GLPSolver glpSolver, boolean skipZeroElements) {
+        this(constraintsSystem, glpSolver, skipZeroElements, 1e-10);
+    }
+
+    /**
+     * @param constraintsSystem system of constraints
+     * @param glpSolver         solver; if not null redundant constrains will be removed;
+     *                          provide for better performance if there may be some redundant constrains
+     * @param skipZeroElements  whether {@code RandomWalk} should iterate over array of indices of non-zero
+     *                          elements or directly over entire transformed matrix A (from {@code constraintsSystem})
+     */
+    public PolytopeRunner(ConstraintsSystem constraintsSystem, GLPSolver glpSolver, boolean skipZeroElements, double eps) {
+        this.eps = eps;
         this.transformation = new Transformation(constraintsSystem.getC(), constraintsSystem.getD(), constraintsSystem.getNumberOfVariables());
         this.numberOfOriginalVariables = constraintsSystem.getA()[0].length;
 
@@ -99,7 +112,7 @@ public class PolytopeRunner {
                         throw new RuntimeException("Infeasible system.");
                     }
 
-                    if (solverResult.getValue() - transformedB[i] < -1e-10) {
+                    if (solverResult.getValue() - transformedB[i] < -this.eps) {
                         redundantConstraints.add(i);
                     }
                 } catch (UnboundedSystemException e) {
