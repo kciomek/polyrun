@@ -39,6 +39,20 @@ public class Transformation {
      * @param numberOfVariables number of variables
      */
     public Transformation(double matrixC[][], double[] vectord, int numberOfVariables) {
+        this(matrixC, vectord, numberOfVariables, 1e-10);
+    }
+
+    /**
+     * Builds transformation that is based on system C x = d.
+     * <p>
+     * Note: Cx = d is expected to be consistent system of linearly independent equations.
+     *
+     * @param matrixC           matrix C
+     * @param vectord           vector d
+     * @param numberOfVariables number of variables
+     * @param eps               absolute error to accept in floating point comparisons (non-negative, default 1e-10)
+     */
+    public Transformation(double matrixC[][], double[] vectord, int numberOfVariables, double eps) {
         if (matrixC == null || matrixC.length == 0) {
             // Set identity matrix as new basis
             this.nullspace = SimpleMatrix.identity(numberOfVariables);
@@ -62,14 +76,14 @@ public class Transformation {
             for (int i = 0; i < C.getNumCols(); i++) {
                 for (int j = 0; j < C.getNumRows(); j++) {
                     if (i == j) {
-                        values[i][j] = W.get(i, i) > 1e-10 ? 1.0 / W.get(i, i) : 0.0;
+                        values[i][j] = W.get(i, i) > eps ? 1.0 / W.get(i, i) : 0.0;
                     } else {
                         values[i][j] = 0.0;
                     }
                 }
             }
 
-            // Set null space of Cx = b as new basis
+            // Set null space of Cx = d as new basis
             this.nullspace = svd.nullSpace();
 
             // Set particular solution, which with the null space describes all solutions of Cx=d

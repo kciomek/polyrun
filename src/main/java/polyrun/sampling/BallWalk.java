@@ -39,6 +39,7 @@ public class BallWalk implements RandomWalk {
     private final OutOfBoundsBehaviour outOfBoundsBehaviour;
     private final Random random;
     private final Boundary boundary;
+    private final double eps;
 
     /**
      * @param radius radius of a ball
@@ -61,6 +62,16 @@ public class BallWalk implements RandomWalk {
      * @param outOfBoundsBehaviour the behaviour of random walk when it tries to make a step that exceeds bounds of the polytope
      */
     public BallWalk(Random random, double radius, OutOfBoundsBehaviour outOfBoundsBehaviour) {
+        this(random, radius, outOfBoundsBehaviour, 1e-10);
+    }
+
+    /**
+     * @param random               random number generator
+     * @param radius               radius of a ball
+     * @param outOfBoundsBehaviour the behaviour of random walk when it tries to make a step that exceeds bounds of the polytope
+     * @param eps                  absolute error to accept in floating point comparisons (non-negative, default 1e-10)
+     */
+    public BallWalk(Random random, double radius, OutOfBoundsBehaviour outOfBoundsBehaviour, double eps) {
         if (radius <= 0.0) {
             throw new IllegalArgumentException("Radius have to be positive.");
         }
@@ -69,6 +80,7 @@ public class BallWalk implements RandomWalk {
         this.radius = radius;
         this.outOfBoundsBehaviour = outOfBoundsBehaviour;
         this.random = random;
+        this.eps = eps;
         this.boundary = new Boundary();
     }
 
@@ -89,14 +101,14 @@ public class BallWalk implements RandomWalk {
             }
 
             // Set newly generated point as a new if it is inside the polytope and stay otherwise
-            if (ConstraintsSystem.isSatisfied(A, nextPoint, b, 1e-10)) {
+            if (ConstraintsSystem.isSatisfied(A, nextPoint, b, this.eps)) {
                 System.arraycopy(nextPoint, 0, to, 0, from.length);
             } else {
                 System.arraycopy(from, 0, to, 0, from.length);
             }
         } else if (OutOfBoundsBehaviour.Crop.equals(this.outOfBoundsBehaviour)) {
             // Calculate distance from point 'from' to the boundary of the polytope defined by Ax <= b in direction stored in 'buffer'
-            double distance = boundary.distance(A, b, buffer, from, 1e-10, null)[0];
+            double distance = boundary.distance(A, b, buffer, from, this.eps, null)[0];
 
             if (distance == Double.POSITIVE_INFINITY) {
                 throw new RuntimeException("The sampling region is unbounded.");

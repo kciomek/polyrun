@@ -15,7 +15,7 @@ public class Boundary {
      * @param b   vector
      * @param d   direction
      * @param x   current point (vector)
-     * @param eps absolute error to allow (non-negative), i.e., the greatest value treated as 0;
+     * @param eps absolute error to accept in floating point comparisons (non-negative, default 1e-10);
      *            applied also to check Ax ≤ b
      * @param indicesOfNonZeroElementsInA array of array of indices of non-zero elements in A (if not provided
      *            the method will iterate over all elements in each row of A; use only if A is relatively sparse)

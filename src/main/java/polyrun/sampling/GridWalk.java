@@ -33,6 +33,7 @@ public class GridWalk implements RandomWalk {
 
     private final Random random;
     private final double gridSpacing;
+    private final double eps;
 
     /**
      * @param gridSpacing grid spacing
@@ -46,12 +47,22 @@ public class GridWalk implements RandomWalk {
      * @param gridSpacing grid spacing
      */
     public GridWalk(Random random, double gridSpacing) {
+        this(random, gridSpacing, 1e-10);
+    }
+
+    /**
+     * @param random      random number generator
+     * @param gridSpacing grid spacing
+     * @param eps         absolute error to accept in floating point comparisons (non-negative, default 1e-10)
+     */
+    public GridWalk(Random random, double gridSpacing, double eps) {
         if (gridSpacing <= 0.0) {
             throw new IllegalArgumentException("Grid spacing have to be positive.");
         }
 
         this.random = random;
         this.gridSpacing = gridSpacing;
+        this.eps = eps;
     }
 
     @Override
@@ -68,7 +79,7 @@ public class GridWalk implements RandomWalk {
         nextPoint[index / 2] = ((index % 2 == 0) ? 1.0 : -1.0) * this.gridSpacing;
 
         // Set newly generated point as a new if it is inside the polytope and stay otherwise
-        if (ConstraintsSystem.isSatisfied(A, nextPoint, b, 1e-10)) {
+        if (ConstraintsSystem.isSatisfied(A, nextPoint, b, this.eps)) {
             System.arraycopy(nextPoint, 0, to, 0, from.length);
         } else {
             System.arraycopy(from, 0, to, 0, from.length);

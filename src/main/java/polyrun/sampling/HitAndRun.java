@@ -36,13 +36,28 @@ public class HitAndRun implements RandomWalk {
     private final Random random;
     private final UnitNSphere unitNSphere;
     private final Boundary boundary;
+    private final double eps;
 
     public HitAndRun() {
         this(new RandomAdaptor(new MersenneTwister()));
     }
 
+    /**
+     *
+     * @param random random number generator
+     */
     public HitAndRun(Random random) {
+        this(random, 1e-10);
+    }
+
+    /**
+     *
+     * @param random random number generator
+     * @param eps    absolute error to accept in floating point comparisons (non-negative, default 1e-10)
+     */
+    public HitAndRun(Random random, double eps) {
         this.random = random;
+        this.eps = eps;
         this.unitNSphere = new UnitNSphere(random);
         this.boundary = new Boundary();
     }
@@ -55,7 +70,7 @@ public class HitAndRun implements RandomWalk {
         this.unitNSphere.fillVectorWithRandomPoint(buffer);
 
         // Calculate begin and end of the segment along the generated direction (distance to boundary in both directions)
-        double[] dist = boundary.distance(A, b, buffer, from, 1e-10, indicesOfNonZeroElementsInA);
+        double[] dist = boundary.distance(A, b, buffer, from, eps, indicesOfNonZeroElementsInA);
 
         if (dist[0] == Double.POSITIVE_INFINITY || dist[1] == Double.NEGATIVE_INFINITY) {
             throw new RuntimeException("Cannot find begin or end of a segment for given direction. The sampling region is unbounded.");

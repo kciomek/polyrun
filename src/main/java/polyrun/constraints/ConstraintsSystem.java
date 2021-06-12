@@ -244,7 +244,7 @@ public class ConstraintsSystem {
      * @param A matrix
      * @param x vector
      * @param b vector
-     * @param eps absolute error to allow (non-negative), i.e., the greatest value treated as 0
+     * @param eps absolute error to accept in floating point comparisons (non-negative, default 1e-10)
      * @return whether Ax &le; b is satisfied
      */
     public static boolean isSatisfied(double[][] A, double[] x, double[] b, double eps) {

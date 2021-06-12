@@ -83,10 +83,11 @@ public class PolytopeRunner {
      *                          provide for better performance if there may be some redundant constrains
      * @param skipZeroElements  whether {@code RandomWalk} should iterate over array of indices of non-zero
      *                          elements or directly over entire transformed matrix A (from {@code constraintsSystem})
+     * @param eps               absolute error to accept in floating point comparisons (non-negative, default 1e-10)
      */
     public PolytopeRunner(ConstraintsSystem constraintsSystem, GLPSolver glpSolver, boolean skipZeroElements, double eps) {
         this.eps = eps;
-        this.transformation = new Transformation(constraintsSystem.getC(), constraintsSystem.getD(), constraintsSystem.getNumberOfVariables());
+        this.transformation = new Transformation(constraintsSystem.getC(), constraintsSystem.getD(), constraintsSystem.getNumberOfVariables(), this.eps);
         this.numberOfOriginalVariables = constraintsSystem.getA()[0].length;
 
         // Project constraints to space where the polytope will be full-dimensional
@@ -296,7 +297,7 @@ public class PolytopeRunner {
 
         double[] transformedPoint = this.transformation.project(new double[][]{startPoint})[0];
 
-        if (!ConstraintsSystem.isSatisfied(A, transformedPoint, b, 1e-10)) {
+        if (!ConstraintsSystem.isSatisfied(A, transformedPoint, b, this.eps)) {
             throw new IllegalArgumentException("Interior point is required.");
         }
 

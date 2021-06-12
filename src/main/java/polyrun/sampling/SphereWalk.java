@@ -45,7 +45,17 @@ public class SphereWalk extends BallWalk {
      * @param outOfBoundsBehaviour the behaviour of random walk when it tries to make a step that exceeds bounds of the polytope
      */
     public SphereWalk(Random random, double radius, OutOfBoundsBehaviour outOfBoundsBehaviour) {
-        super(random, radius, outOfBoundsBehaviour);
+        super(random, radius, outOfBoundsBehaviour, 1e-10);
+    }
+
+    /**
+     * @param random               random number generator
+     * @param radius               radius of a sphere
+     * @param outOfBoundsBehaviour the behaviour of random walk when it tries to make a step that exceeds bounds of the polytope
+     * @param eps                  absolute error to accept in floating point comparisons (non-negative, default 1e-10)
+     */
+    public SphereWalk(Random random, double radius, OutOfBoundsBehaviour outOfBoundsBehaviour, double eps) {
+        super(random, radius, outOfBoundsBehaviour, eps);
     }
 
     @Override
