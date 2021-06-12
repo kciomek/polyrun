@@ -22,7 +22,7 @@ To add a dependency in your project's pom.xml use the following:
     <dependency>
         <groupId>com.github.kciomek</groupId>
         <artifactId>polyrun</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </dependency>
 
 
@@ -61,7 +61,7 @@ final double[] rhs = new double[]{0, 0, 0, 1, 0};
 ConstraintsSystem constraints = new ConstraintsSystem(lhs, dir, rhs);
 ```
 
-Second, one needs to define an object of the _[PolytopeRunner](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/PolytopeRunner.html)_ class,
+Second, one needs to define an object of the _[PolytopeRunner](https://kciomek.github.io/polyrun/docs/1.1.0/api/polyrun/PolytopeRunner.html)_ class,
 which is responsible for sampling from the pre-defined polytope:
 ```java
 PolytopeRunner runner = new PolytopeRunner(constraints);
@@ -69,7 +69,7 @@ PolytopeRunner runner = new PolytopeRunner(constraints);
 
 It transforms the input constraints to a form which is appropriate for the sampling
 algorithms and removes the redundant constraints. There are
-[two other constructors](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/PolytopeRunner.html#PolytopeRunner-polyrun.constraints.ConstraintsSystem-boolean-boolean-)
+[two other constructors](https://kciomek.github.io/polyrun/docs/1.1.0/api/polyrun/PolytopeRunner.html#PolytopeRunner-polyrun.constraints.ConstraintsSystem-boolean-boolean-)
 that allows for controlling the transformation settings.
 
 Third, a starting point for the sampling algorithms needs to be set up.
@@ -79,7 +79,7 @@ or use some built-in method for selecting such a point automatically in the foll
 runner.setAnyStartPoint(); // sets a point that is a result of slack maximization
 ```
 
-Finally, _[PolytopeRunner](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/PolytopeRunner.html)_ may be used to generate a Markov chain of samples or to sample
+Finally, _[PolytopeRunner](https://kciomek.github.io/polyrun/docs/1.1.0/api/polyrun/PolytopeRunner.html)_ may be used to generate a Markov chain of samples or to sample
 a neighborhood of the starting point. For example, the following code generates _1000_
 uniformly distributed samples using the _Hit-and-Run_ method, taking only every
 _1.0 * n^3_:
@@ -94,7 +94,7 @@ The results of such sampling procedure:
 
 Even though the library provides some pre-defined thinning functions,
 one may define a custom one by implementing
-the _[ThinningFunction](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/thinning/ThinningFunction.html)_
+the _[ThinningFunction](https://kciomek.github.io/polyrun/docs/1.1.0/api/polyrun/thinning/ThinningFunction.html)_
 interface, and provide it as a second parameter to the _chain_ method. 
 
 The procedure for sampling a neighbourhood of some interior point can be used analogously.
@@ -114,7 +114,7 @@ If the generated samples would be outside the polytope, the algorithm crops them
 Instead of allocating the memory for an array of complete results of the sampling algorithm,
 both _chain_ and _neighborhood_ methods can consume the samples already during
 the generation process. For this purpose, an interface 
-_[SampleConsumer](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/SampleConsumer.html)_ has
+_[SampleConsumer](https://kciomek.github.io/polyrun/docs/1.1.0/api/polyrun/SampleConsumer.html)_ has
 to be implemented:
 
 ```java
@@ -130,7 +130,7 @@ runner.chain(new HitAndRun(),
 ```
 
 Both _chain_ and _neighborhood_ methods can be called with any
-_[RandomWalk](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/sampling/RandomWalk.html)_
+_[RandomWalk](https://kciomek.github.io/polyrun/docs/1.1.0/api/polyrun/sampling/RandomWalk.html)_
 depending on the application. All sampling algorithms accept custom random number generators in their constructors,
 what allows for performing the experiments whose results are reproducible.
 
@@ -139,19 +139,19 @@ This and other examples can be found [here](https://github.com/kciomek/polyrun-e
  
 
 
-For a more detailed description of the library, refer to the [API documentation](http://kciomek.github.io/polyrun/docs/1.0.0/api).
+For a more detailed description of the library, refer to the [API documentation](http://kciomek.github.io/polyrun/docs/1.1.0/api).
 
 
 ### Extension points
 
 The library allows customization. User can implement own
-_[ThinningFunction](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/thinning/ThinningFunction.html)_
+_[ThinningFunction](https://kciomek.github.io/polyrun/docs/1.1.0/api/polyrun/thinning/ThinningFunction.html)_
 adjusting the skipping samples in the chain to the particular application. It is possible to provide a custom solver used by 
-_[PolytopeRunner](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/PolytopeRunner.html)_
+_[PolytopeRunner](https://kciomek.github.io/polyrun/docs/1.1.0/api/polyrun/PolytopeRunner.html)_
 for slack maximization and removing redundant constraints. It can be done by implementing
-_[GLPSolver](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/solver/GLPSolver.html)_.
+_[GLPSolver](https://kciomek.github.io/polyrun/docs/1.1.0/api/polyrun/solver/GLPSolver.html)_.
 Finally, the library provides interface
-_[RandomWalk](https://kciomek.github.io/polyrun/docs/1.0.0/api/polyrun/sampling/RandomWalk.html)_.
+_[RandomWalk](https://kciomek.github.io/polyrun/docs/1.1.0/api/polyrun/sampling/RandomWalk.html)_.
 By extending it, the user can control random walk inside the polytope what results in custom sampling algorithm.
 
 ![Example](doc/library.png?raw=true)
@@ -165,7 +165,7 @@ It allows for using the sampler without any coding.
 
 To run _polyrun_ as a command line tool [Java Runtime Environment 1.6+](https://www.java.com/download/)
 is required to be installed. The latest version of executable _polyrun_ can be downloaded
-from [here](https://github.com/kciomek/polyrun/releases/download/v1.0.0/polyrun-1.0.0-jar-with-dependencies.jar).
+from [here](https://github.com/kciomek/polyrun/releases/download/v1.1.0/polyrun-1.1.0-jar-with-dependencies.jar).
 
 ### Usage
 
@@ -199,7 +199,7 @@ In order to use CLI, initially, an input file (e.g., _input.txt_) has to be prep
 Then, running the following command in a terminal allows for generating _1000_
 uniformly distributed samples using _Hit-and-Run_:
 
-    java -jar polyrun-1.0.0-jar-with-dependencies.jar -n 1000 < input.txt
+    java -jar polyrun-1.1.0-jar-with-dependencies.jar -n 1000 < input.txt
 
 where parameter _-n_ controls required number of samples.
 The other useful parameter is _-s_. It allows for providing a custom seed
@@ -207,7 +207,7 @@ to random generator, what makes the experiments reproducible.
 For a detailed documentation of the implemented parameters, a help page can
 be viewed using the following command:
 
-    java -jar polyrun-1.0.0-jar-with-dependencies.jar -h
+    java -jar polyrun-1.1.0-jar-with-dependencies.jar -h
 
 
 ## References
@@ -221,7 +221,7 @@ Operations Research, 1984, 32:1296–1308. [click to visit](http://www.jstor.org
 [3] M. Dyer, A. Frieze, R. Kannan, _A random polynomial-time algorithm for approximating the volume of convex bodies_, J. ACM, 
 1991, 38:1-17. [click to visit](https://dx.doi.org/10.1145/102782.102783)
 
-[4] API documentation. [click to visit](https://kciomek.github.io/polyrun/docs/1.0.0/api)
+[4] API documentation. [click to visit](https://kciomek.github.io/polyrun/docs/1.1.0/api)
 
 [5] Code examples. [click to visit](https://github.com/kciomek/polyrun-examples)
 
